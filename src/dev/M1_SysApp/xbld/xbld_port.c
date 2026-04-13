@@ -1,0 +1,224 @@
+/*
+ * xbld_port (samv71) .c - xBLD
+ */
+
+#include "xbld_port.h"
+#include "xbld_config.h"
+#include "definitions.h"
+#include "peripheral/efc/plib_efc.h"
+#include "device.h"
+#include <string.h>
+#include "Tick/tick.h"
+
+/* Peripheral de-initialization function */
+/* WARNING !!!!!!!!!!
+ * You MUST implement this function to disable all peripherals (e.g. UART, SPI, timers)
+ */
+__attribute__((weak)) void xBLD_Peripheral_DeInit(void)
+{
+    volatile uint32_t timeout;
+    timeout = 500000UL;
+    while (!(UART0_REGS->UART_SR & UART_SR_TXEMPTY_Msk) && timeout--)
+    { __asm volatile ("nop"); }
+    UART0_REGS->UART_IDR = 0xFFFFFFFFU;                         
+    UART0_REGS->UART_CR  = UART_CR_RSTRX_Msk | UART_CR_RSTTX_Msk  
+                         | UART_CR_RXDIS_Msk  | UART_CR_TXDIS_Msk; 
+ 
+    timeout = 500000UL;
+    while (!(UART2_REGS->UART_SR & UART_SR_TXEMPTY_Msk) && timeout--)
+    { __asm volatile ("nop"); }
+    UART2_REGS->UART_IDR = 0xFFFFFFFFU;
+    UART2_REGS->UART_CR  = UART_CR_RSTRX_Msk | UART_CR_RSTTX_Msk
+                         | UART_CR_RXDIS_Msk  | UART_CR_TXDIS_Msk;
+ 
+                         
+    QSPI_REGS->QSPI_IDR = 0xFFFFFFFFU;          /* disable all IRQs              */
+    QSPI_REGS->QSPI_CR  = QSPI_CR_QSPIDIS_Msk;  /* disable QSPI controller       */
+ 
+    /* ----------------------------------------------------------------------*
+     * e.g.:                                                                 *
+     *   SPI0_REGS->SPI_IDR  = 0xFFFFFFFFU;                                  *
+     *   SPI0_REGS->SPI_CR   = SPI_CR_SPIDIS_Msk;                            *
+     *                                                                       *
+     *   TC0_CH0_REGS->TC_IDR = 0xFFFFFFFFU;                                 *
+     *   TC0_CH0_REGS->TC_CCR = TC_CCR_CLKDIS_Msk;                           *
+     *-----------------------------------------------------------------------*/
+}
+
+/* DCache macros */
+#if XBLD_USE_DCACHE_OPS
+  #define XBLD_DCACHE_INVALIDATE(addr, len)  do { \
+      SCB_InvalidateDCache_by_Addr((void*)(addr), (int32_t)(len)); \
+      __DSB(); __ISB(); } while(0)
+  #define XBLD_DCACHE_CLEAN_INVALIDATE()     do { \
+      SCB_CleanInvalidateDCache(); SCB_InvalidateICache(); \
+      __DSB(); __ISB(); } while(0)
+#else
+  #define XBLD_DCACHE_INVALIDATE(addr, len)  do { __DSB(); __ISB(); } while(0)
+  #define XBLD_DCACHE_CLEAN_INVALIDATE()     do { __DSB(); __ISB(); } while(0)
+#endif
+
+/* IRQ barrier macros */
+#if XBLD_USE_IRQ_BARRIER
+  #define XBLD_IRQ_DISABLE()   uint32_t _xbld_primask = __get_PRIMASK(); __disable_irq()
+  #define XBLD_IRQ_RESTORE()   __set_PRIMASK(_xbld_primask)
+#else
+  #define XBLD_IRQ_DISABLE()   ((void)0)
+  #define XBLD_IRQ_RESTORE()   ((void)0)
+#endif
+
+/* Flash init */
+static int port_flash_init(void)
+{
+    EFC_Initialize();
+    return XBLD_PORT_OK;
+}
+
+/* Flash erase */
+static int port_flash_erase(uint32_t addr, uint32_t size)
+{
+    if (size == 0U) return XBLD_PORT_ERR;
+
+    uint32_t num_sectors = (size + EFC_SECTORSIZE - 1U) / EFC_SECTORSIZE;
+    uint32_t cur = addr & ~((uint32_t)(EFC_SECTORSIZE - 1U));
+
+    for (uint32_t i = 0U; i < num_sectors; i++)
+    {
+        XBLD_IRQ_DISABLE();
+
+        if (!EFC_SectorErase(cur))
+        {
+            XBLD_IRQ_RESTORE(); 
+            return XBLD_PORT_ERR;
+        }
+        while (EFC_IsBusy());
+
+        XBLD_IRQ_RESTORE();
+
+        cur += EFC_SECTORSIZE;
+    }
+    return XBLD_PORT_OK;
+}
+
+/* Flash write (QuadWord) */
+static int port_flash_write(uint32_t addr, const uint8_t *data, uint32_t len)
+{
+    static uint8_t qw_buf[16];
+
+    while (len > 0U)
+    {
+        uint32_t aligned = addr & ~0xFU;
+        uint32_t offset  = addr & 0xFU;
+        uint32_t chunk   = 16U - offset;
+        if (chunk > len) chunk = len;
+
+        XBLD_DCACHE_INVALIDATE(aligned, 16U);
+        
+        XBLD_IRQ_DISABLE();
+        memcpy(qw_buf, (const void *)aligned, 16U);
+        memcpy(qw_buf + offset, data, chunk);
+       
+        if (!EFC_QuadWordWrite((uint32_t *)qw_buf, aligned))
+        {
+            XBLD_IRQ_RESTORE();
+            return XBLD_PORT_ERR;
+        }
+        while (EFC_IsBusy());
+
+        XBLD_IRQ_RESTORE();
+
+        XBLD_DCACHE_INVALIDATE(aligned, 16U);
+
+        addr += chunk; data += chunk; len -= chunk;
+    }
+    return XBLD_PORT_OK;
+}
+
+/* Flash read */
+static int port_flash_read(uint32_t addr, uint8_t *data, uint32_t len)
+{
+    if (data == NULL || len == 0U) return XBLD_PORT_ERR;
+    XBLD_DCACHE_INVALIDATE(addr, len);
+    memcpy(data, (const void *)addr, len);
+    return XBLD_PORT_OK;
+}
+
+/* Tick */
+static uint32_t port_get_tick(void) { 
+    return Utils_GetTick(); 
+}
+
+/* System reset */
+static void port_system_reset(void) { 
+    NVIC_SystemReset(); 
+}
+
+/* Jump to app */
+typedef void (*FpVoidFn)(void);
+
+static void port_jump_to_app(uint32_t app_vector_addr)
+{
+    uint32_t sp    = *(const uint32_t *)(app_vector_addr);
+    uint32_t reset = *(const uint32_t *)(app_vector_addr + 4U);
+
+    if (sp < 0x20400000UL || sp > 0x20460000UL)
+        return;
+
+    xBLD_Peripheral_DeInit();
+
+    __disable_irq();
+    SysTick->CTRL = 0U;
+
+    for (int i = 0; i < 8; i++)
+    {
+        NVIC->ICER[i] = 0xFFFFFFFFU;
+        NVIC->ICPR[i] = 0xFFFFFFFFU;
+    }
+
+    SCB->VTOR = app_vector_addr & SCB_VTOR_TBLOFF_Msk;
+    XBLD_DCACHE_CLEAN_INVALIDATE();
+
+    __set_MSP(sp);
+    ((FpVoidFn)reset)();
+    while (1) {}
+}
+
+void xBLD_ForceJump(uint32_t app_vector_addr)
+{
+    uint32_t sp    = *(const uint32_t *)(app_vector_addr);
+    uint32_t reset = *(const uint32_t *)(app_vector_addr + 4U);
+
+    xBLD_Peripheral_DeInit();
+
+    __disable_irq();
+    SysTick->CTRL = 0U;
+
+    for (int i = 0; i < 8; i++)
+    {
+        NVIC->ICER[i] = 0xFFFFFFFFU;
+        NVIC->ICPR[i] = 0xFFFFFFFFU;
+    }
+
+    SCB->VTOR = app_vector_addr & SCB_VTOR_TBLOFF_Msk;
+    XBLD_DCACHE_CLEAN_INVALIDATE();
+
+    __set_MSP(sp);
+    ((FpVoidFn)reset)();
+    while (1) {}
+}
+
+/* Default port */
+xBLD_Port_t xBLD_GetDefaultPort(void)
+{
+    xBLD_Port_t port = {
+        .flash_init   = port_flash_init,
+        .flash_erase  = port_flash_erase,
+        .flash_write  = port_flash_write,
+        .flash_read   = port_flash_read,
+        .get_tick     = port_get_tick,
+        .system_reset = port_system_reset,
+        .jump_to_app  = port_jump_to_app,
+        .poll_fn      = NULL,
+    };
+    return port;
+}
