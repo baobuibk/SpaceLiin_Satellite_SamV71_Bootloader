@@ -257,6 +257,11 @@
             </logicalFolder>
           </logicalFolder>
           <logicalFolder name="M3_Devices" displayName="M3_Devices" projectFiles="true">
+            <logicalFolder name="IO_ExWD-TPL5010"
+                           displayName="IO_ExWD-TPL5010"
+                           projectFiles="true">
+              <itemPath>../src/dev/M3_Devices/IO_ExWD-TPL5010/wd_tpl5010.h</itemPath>
+            </logicalFolder>
             <logicalFolder name="QSPI_FLASH" displayName="QSPI_FLASH" projectFiles="true">
             </logicalFolder>
           </logicalFolder>
@@ -458,6 +463,11 @@
             </logicalFolder>
           </logicalFolder>
           <logicalFolder name="M3_Devices" displayName="M3_Devices" projectFiles="true">
+            <logicalFolder name="IO_ExWD-TPL5010"
+                           displayName="IO_ExWD-TPL5010"
+                           projectFiles="true">
+              <itemPath>../src/dev/M3_Devices/IO_ExWD-TPL5010/wd_tpl5010.c</itemPath>
+            </logicalFolder>
             <logicalFolder name="QSPI_FLASH" displayName="QSPI_FLASH" projectFiles="true">
             </logicalFolder>
           </logicalFolder>
@@ -554,6 +564,7 @@
       <C32>
         <property key="additional-warnings" value="false"/>
         <property key="addresss-attribute-use" value="false"/>
+        <property key="appendMe" value=""/>
         <property key="cast-align" value="false"/>
         <property key="code-model" value="default"/>
         <property key="const-model" value="default"/>
@@ -632,6 +643,7 @@
         <property key="additional-options-use-response-files" value="false"/>
         <property key="additional-options-write-sla" value="false"/>
         <property key="allocate-dinit" value="false"/>
+        <property key="appendMe" value=""/>
         <property key="code-dinit" value="false"/>
         <property key="ebase-addr" value=""/>
         <property key="enable-check-sections" value="false"/>
@@ -677,6 +689,7 @@
       <C32CPP>
         <property key="additional-warnings" value="false"/>
         <property key="addresss-attribute-use" value="false"/>
+        <property key="appendMe" value=""/>
         <property key="check-new" value="false"/>
         <property key="eh-specs" value="true"/>
         <property key="enable-app-io" value="false"/>
@@ -705,6 +718,7 @@
         <property key="use-indirect-calls" value="false"/>
       </C32CPP>
       <C32Global>
+        <property key="appendMe" value=""/>
         <property key="combine-sourcefiles" value="false"/>
         <property key="common-include-directories" value=""/>
         <property key="common-macros" value=""/>
@@ -759,6 +773,8 @@
         <property key="memories.programmemory" value="true"/>
         <property key="memories.programmemory.ranges" value="400000-5fffff"/>
         <property key="poweroptions.powerenable" value="false"/>
+        <property key="programmerToGoFilePath"
+                  value="F:/F00_Workspace/06_SAT_SAM/MCU/MainProject/07_BOOTLOADER/07_BOOTLOADER.X/debug/default/07_BOOTLOADER_ptg"/>
         <property key="programoptions.eraseb4program" value="true"/>
         <property key="programoptions.preservedataflash" value="false"/>
         <property key="programoptions.preservedataflash.ranges"

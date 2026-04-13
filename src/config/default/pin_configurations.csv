@@ -2,7 +2,7 @@
 1,PD0,,Available,In,,,,,,,
 2,PD31,,Available,In,,,,,,,
 4,PE0,,Available,In,,,,,,,
-6,PE1,,Available,In,,,,,,,
+6,PE1,WD_PE1,GPIO,Out,Low,No,Disabled,No,No,Disabled,Low
 7,PE2,,Available,In,,,,,,,
 10,PE3,,Available,In,,,,,,,
 11,PC0,,Available,In,,,,,,,

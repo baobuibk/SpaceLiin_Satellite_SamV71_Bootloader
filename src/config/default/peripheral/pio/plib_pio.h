@@ -62,6 +62,15 @@
 // *****************************************************************************
 
 
+/*** Macros for WD_PE1 pin ***/
+#define WD_PE1_Set()               (PIOE_REGS->PIO_SODR = ((uint32_t)1U<<1U))
+#define WD_PE1_Clear()             (PIOE_REGS->PIO_CODR = ((uint32_t)1U<<1U))
+#define WD_PE1_Toggle()            (PIOE_REGS->PIO_ODSR ^= ((uint32_t)1U<<1U))
+#define WD_PE1_OutputEnable()      (PIOE_REGS->PIO_OER = ((uint32_t)1U<<1U))
+#define WD_PE1_InputEnable()       (PIOE_REGS->PIO_ODR = ((uint32_t)1U<<1U))
+#define WD_PE1_Get()               ((PIOE_REGS->PIO_PDSR >> 1U) & 0x1U)
+#define WD_PE1_PIN                  PIO_PIN_PE1
+
 /*** Macros for LED_PA23 pin ***/
 #define LED_PA23_Set()               (PIOA_REGS->PIO_SODR = ((uint32_t)1U<<23U))
 #define LED_PA23_Clear()             (PIOA_REGS->PIO_CODR = ((uint32_t)1U<<23U))
