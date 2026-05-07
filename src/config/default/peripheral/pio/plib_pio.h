@@ -80,6 +80,15 @@
 #define LED_PA23_Get()               ((PIOA_REGS->PIO_PDSR >> 23U) & 0x1U)
 #define LED_PA23_PIN                  PIO_PIN_PA23
 
+/*** Macros for FRAM_NCS pin ***/
+#define FRAM_NCS_Set()               (PIOD_REGS->PIO_SODR = ((uint32_t)1U<<19U))
+#define FRAM_NCS_Clear()             (PIOD_REGS->PIO_CODR = ((uint32_t)1U<<19U))
+#define FRAM_NCS_Toggle()            (PIOD_REGS->PIO_ODSR ^= ((uint32_t)1U<<19U))
+#define FRAM_NCS_OutputEnable()      (PIOD_REGS->PIO_OER = ((uint32_t)1U<<19U))
+#define FRAM_NCS_InputEnable()       (PIOD_REGS->PIO_ODR = ((uint32_t)1U<<19U))
+#define FRAM_NCS_Get()               ((PIOD_REGS->PIO_PDSR >> 19U) & 0x1U)
+#define FRAM_NCS_PIN                  PIO_PIN_PD19
+
 /*** Macros for LED_PC9 pin ***/
 #define LED_PC9_Set()               (PIOC_REGS->PIO_SODR = ((uint32_t)1U<<9U))
 #define LED_PC9_Clear()             (PIOC_REGS->PIO_CODR = ((uint32_t)1U<<9U))

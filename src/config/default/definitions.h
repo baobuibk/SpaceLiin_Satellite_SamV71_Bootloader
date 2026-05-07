@@ -48,7 +48,6 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
-#include "peripheral/qspi/plib_qspi_spi.h"
 #include "peripheral/uart/plib_uart2.h"
 #include "peripheral/uart/plib_uart0.h"
 #include "peripheral/clk/plib_clk.h"
@@ -56,6 +55,7 @@
 #include "peripheral/nvic/plib_nvic.h"
 #include "peripheral/systick/plib_systick.h"
 #include "peripheral/efc/plib_efc.h"
+#include "peripheral/usart/plib_usart2_spi.h"
 
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility

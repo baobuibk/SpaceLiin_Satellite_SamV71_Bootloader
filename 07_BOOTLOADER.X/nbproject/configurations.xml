@@ -19,10 +19,6 @@
             <logicalFolder name="pio" displayName="pio" projectFiles="true">
               <itemPath>../src/config/default/peripheral/pio/plib_pio.h</itemPath>
             </logicalFolder>
-            <logicalFolder name="qspi" displayName="qspi" projectFiles="true">
-              <itemPath>../src/config/default/peripheral/qspi/plib_qspi_common.h</itemPath>
-              <itemPath>../src/config/default/peripheral/qspi/plib_qspi_spi.h</itemPath>
-            </logicalFolder>
             <logicalFolder name="systick" displayName="systick" projectFiles="true">
               <itemPath>../src/config/default/peripheral/systick/plib_systick.h</itemPath>
             </logicalFolder>
@@ -30,6 +26,10 @@
               <itemPath>../src/config/default/peripheral/uart/plib_uart_common.h</itemPath>
               <itemPath>../src/config/default/peripheral/uart/plib_uart2.h</itemPath>
               <itemPath>../src/config/default/peripheral/uart/plib_uart0.h</itemPath>
+            </logicalFolder>
+            <logicalFolder name="usart" displayName="usart" projectFiles="true">
+              <itemPath>../src/config/default/peripheral/usart/plib_usart_spi_common.h</itemPath>
+              <itemPath>../src/config/default/peripheral/usart/plib_usart2_spi.h</itemPath>
             </logicalFolder>
           </logicalFolder>
           <itemPath>../src/config/default/device_cache.h</itemPath>
@@ -315,10 +315,10 @@
                      projectFiles="true">
         <logicalFolder name="components" displayName="components" projectFiles="true">
           <itemPath>07_BOOTLOADER_default/components/uart2.yml</itemPath>
-          <itemPath>07_BOOTLOADER_default/components/qspi.yml</itemPath>
           <itemPath>07_BOOTLOADER_default/components/cmsis.yml</itemPath>
           <itemPath>07_BOOTLOADER_default/components/dfp.yml</itemPath>
           <itemPath>07_BOOTLOADER_default/components/efc.yml</itemPath>
+          <itemPath>07_BOOTLOADER_default/components/usart2.yml</itemPath>
           <itemPath>07_BOOTLOADER_default/components/uart0.yml</itemPath>
           <itemPath>07_BOOTLOADER_default/components/core.yml</itemPath>
         </logicalFolder>
@@ -358,15 +358,15 @@
             <logicalFolder name="pio" displayName="pio" projectFiles="true">
               <itemPath>../src/config/default/peripheral/pio/plib_pio.c</itemPath>
             </logicalFolder>
-            <logicalFolder name="qspi" displayName="qspi" projectFiles="true">
-              <itemPath>../src/config/default/peripheral/qspi/plib_qspi_spi.c</itemPath>
-            </logicalFolder>
             <logicalFolder name="systick" displayName="systick" projectFiles="true">
               <itemPath>../src/config/default/peripheral/systick/plib_systick.c</itemPath>
             </logicalFolder>
             <logicalFolder name="uart" displayName="uart" projectFiles="true">
               <itemPath>../src/config/default/peripheral/uart/plib_uart2.c</itemPath>
               <itemPath>../src/config/default/peripheral/uart/plib_uart0.c</itemPath>
+            </logicalFolder>
+            <logicalFolder name="usart" displayName="usart" projectFiles="true">
+              <itemPath>../src/config/default/peripheral/usart/plib_usart2_spi.c</itemPath>
             </logicalFolder>
           </logicalFolder>
           <logicalFolder name="stdio" displayName="stdio" projectFiles="true">
@@ -525,7 +525,7 @@
         <targetDevice>ATSAMV71Q21B</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
-        <platformTool>EdbgTool</platformTool>
+        <platformTool>pk4hybrid</platformTool>
         <languageToolchain>XC32</languageToolchain>
         <languageToolchainVersion>5.00</languageToolchainVersion>
         <platform>3</platform>
@@ -854,6 +854,11 @@
                   value="Press to select which tool pack to use"/>
         <property key="voltagevalue" value=""/>
       </Tool>
+      <pk4hybrid>
+        <property key="memories.programmemory.ranges" value="400000-5fffff"/>
+        <property key="programmerToGoFilePath"
+                  value="F:/F00_Workspace/06_SAT_SAM/MCU/MainProject/07_BOOTLOADER/07_BOOTLOADER.X/debug/default/07_BOOTLOADER_ptg"/>
+      </pk4hybrid>
     </conf>
   </confs>
 </configurationDescriptor>

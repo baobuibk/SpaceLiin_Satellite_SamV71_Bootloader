@@ -221,8 +221,6 @@ int xTP_ARQ_OnReceive(xTP_Instance_t *inst, xTP_ID_t id,
     {
         uint8_t rx_seq = inst->data.seq_byte & XTP_SEQ_NUM_MASK;
 
-        xTP_Log("[ARQ] Seq=%u -> ACK", (unsigned)rx_seq);
-
         /* Send ACK immediately. */
         arq_send_ctrl(inst, XTP_ARQ_ID_ACK, rx_seq);
         XTP_STAT_INC(inst, arq_ack_tx);

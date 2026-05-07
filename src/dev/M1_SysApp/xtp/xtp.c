@@ -266,7 +266,9 @@ xTP_Return_t xTP_Read(xTP_Instance_t *inst, const uint8_t *rx_byte)
             return XTP_ERR_TYPEMETHOD;
         }
         xtp_hdr_byte(d, b);
+#if DETAIL_LOG
         xTP_Log("PX=0x%02X", (unsigned)b);
+#endif
 #if XTP_USE_TARGET
         xtp_go(d, XTP_DECODE_SRC);
 #else
@@ -313,7 +315,9 @@ xTP_Return_t xTP_Read(xTP_Instance_t *inst, const uint8_t *rx_byte)
     case XTP_DECODE_SEQ:
         d->seq_byte = b;
         xtp_hdr_byte(d, b);
+#if DETAIL_LOG
         xTP_Log("SEQ=0x%02X",(unsigned)b);
+#endif
         xtp_next_after_seq(d);
         break;
 #endif

@@ -572,21 +572,10 @@ data:
       - children:
         - attributes:
             id: core
-            value: '6144'
+            value: '4096'
           type: Dynamic
         type: Values
       type: Hex
-    QSPI_CLOCK_ENABLE:
-      attributes:
-        id: QSPI_CLOCK_ENABLE
-      children:
-      - children:
-        - attributes:
-            id: qspi
-            value: 'true'
-          type: Dynamic
-        type: Values
-      type: Boolean
     QSPI_INTERRUPT_ENABLE_UPDATE:
       attributes:
         id: QSPI_INTERRUPT_ENABLE_UPDATE
@@ -594,7 +583,7 @@ data:
       - children:
         - attributes:
             id: core
-            value: 'false'
+            value: 'true'
           type: Dynamic
         type: Values
       type: Boolean
@@ -605,18 +594,7 @@ data:
       - children:
         - attributes:
             id: core
-            value: 'true'
-          type: Dynamic
-        type: Values
-      type: Boolean
-    QSPI_INTERRUPT_ENABLE:
-      attributes:
-        id: QSPI_INTERRUPT_ENABLE
-      children:
-      - children:
-        - attributes:
-            id: qspi
-            value: 'true'
+            value: 'false'
           type: Dynamic
         type: Values
       type: Boolean
@@ -627,18 +605,7 @@ data:
       - children:
         - attributes:
             id: core
-            value: QSPI_InterruptHandler
-          type: Dynamic
-        type: Values
-      type: String
-    QSPI_INTERRUPT_HANDLER:
-      attributes:
-        id: QSPI_INTERRUPT_HANDLER
-      children:
-      - children:
-        - attributes:
-            id: qspi
-            value: QSPI_InterruptHandler
+            value: QSPI_Handler
           type: Dynamic
         type: Values
       type: String
@@ -649,18 +616,7 @@ data:
       - children:
         - attributes:
             id: core
-            value: 'true'
-          type: Dynamic
-        type: Values
-      type: Boolean
-    QSPI_INTERRUPT_HANDLER_LOCK:
-      attributes:
-        id: QSPI_INTERRUPT_HANDLER_LOCK
-      children:
-      - children:
-        - attributes:
-            id: qspi
-            value: 'true'
+            value: 'false'
           type: Dynamic
         type: Values
       type: Boolean
@@ -5792,7 +5748,7 @@ data:
       - children:
         - attributes:
             id: core
-            value: '100663296'
+            value: '100892672'
           type: Dynamic
         type: Values
       type: Hex
@@ -5803,7 +5759,7 @@ data:
       - children:
         - attributes:
             id: core
-            value: '0'
+            value: '229376'
           type: Dynamic
         type: Values
       type: Hex
@@ -5895,7 +5851,7 @@ data:
       - children:
         - attributes:
             id: core
-            value: '203904'
+            value: '236672'
           type: Dynamic
         type: Values
       type: Hex
@@ -6121,6 +6077,204 @@ data:
       - children:
         - attributes:
             value: Out
+          type: User
+        type: Values
+      type: String
+    USART2_CLOCK_ENABLE:
+      attributes:
+        id: USART2_CLOCK_ENABLE
+      children:
+      - children:
+        - attributes:
+            id: usart2
+            value: 'true'
+          type: Dynamic
+        type: Values
+      type: Boolean
+    USART2_INTERRUPT_ENABLE_UPDATE:
+      attributes:
+        id: USART2_INTERRUPT_ENABLE_UPDATE
+      children:
+      - children:
+        - attributes:
+            id: core
+            value: 'true'
+          type: Dynamic
+        type: Values
+      type: Boolean
+    NVIC_15_0_ENABLE:
+      attributes:
+        id: NVIC_15_0_ENABLE
+      children:
+      - children:
+        - attributes:
+            id: core
+            value: 'false'
+          type: Dynamic
+        type: Values
+      type: Boolean
+    NVIC_15_0_HANDLER:
+      attributes:
+        id: NVIC_15_0_HANDLER
+      children:
+      - children:
+        - attributes:
+            id: core
+            value: USART2_Handler
+          type: Dynamic
+        type: Values
+      type: String
+    NVIC_15_0_HANDLER_LOCK:
+      attributes:
+        id: NVIC_15_0_HANDLER_LOCK
+      children:
+      - children:
+        - attributes:
+            id: core
+            value: 'false'
+          type: Dynamic
+        type: Values
+      type: Boolean
+    USART2_CLOCK_FREQUENCY:
+      attributes:
+        id: USART2_CLOCK_FREQUENCY
+      children:
+      - children:
+        - attributes:
+            id: core
+            value: '120000000'
+          type: Dynamic
+        type: Values
+      type: Integer
+    PIN_106_FUNCTION_TYPE:
+      attributes:
+        id: PIN_106_FUNCTION_TYPE
+      children:
+      - children:
+        - attributes:
+            value: USART2_RXD2
+          type: User
+        type: Values
+      type: String
+    PIN_106_PERIPHERAL_FUNCTION:
+      attributes:
+        id: PIN_106_PERIPHERAL_FUNCTION
+      children:
+      - children:
+        - attributes:
+            value: B
+          type: User
+        type: Values
+      type: String
+    PIN_78_FUNCTION_TYPE:
+      attributes:
+        id: PIN_78_FUNCTION_TYPE
+      children:
+      - children:
+        - attributes:
+            value: USART2_TXD2
+          type: User
+        type: Values
+      type: String
+    PIN_78_PERIPHERAL_FUNCTION:
+      attributes:
+        id: PIN_78_PERIPHERAL_FUNCTION
+      children:
+      - children:
+        - attributes:
+            value: B
+          type: User
+        type: Values
+      type: String
+    PIN_74_FUNCTION_TYPE:
+      attributes:
+        id: PIN_74_FUNCTION_TYPE
+      children:
+      - children:
+        - attributes:
+            value: USART2_SCK2
+          type: User
+        type: Values
+      type: String
+    PIN_74_PERIPHERAL_FUNCTION:
+      attributes:
+        id: PIN_74_PERIPHERAL_FUNCTION
+      children:
+      - children:
+        - attributes:
+            value: B
+          type: User
+        type: Values
+      type: String
+    PIN_67_FUNCTION_TYPE:
+      attributes:
+        id: PIN_67_FUNCTION_TYPE
+      children:
+      - children:
+        - attributes:
+            value: GPIO
+          type: User
+        type: Values
+      type: String
+    PIN_67_PERIPHERAL_FUNCTION:
+      attributes:
+        id: PIN_67_PERIPHERAL_FUNCTION
+      children:
+      - children:
+        - attributes:
+            value: GPIO
+          type: User
+        type: Values
+      type: String
+    PIN_67_FUNCTION_NAME:
+      attributes:
+        id: PIN_67_FUNCTION_NAME
+      children:
+      - children:
+        - attributes:
+            value: FRAM_NCS
+          type: User
+        type: Values
+      type: String
+    PIOD_OER_VALUE:
+      attributes:
+        id: PIOD_OER_VALUE
+      children:
+      - children:
+        - attributes:
+            id: core
+            value: '524288'
+          type: Dynamic
+        type: Values
+      type: Hex
+    PIN_67_DIR:
+      attributes:
+        id: PIN_67_DIR
+      children:
+      - children:
+        - attributes:
+            value: Out
+          type: User
+        type: Values
+      type: String
+    PIOD_SODR_VALUE:
+      attributes:
+        id: PIOD_SODR_VALUE
+      children:
+      - children:
+        - attributes:
+            id: core
+            value: '524288'
+          type: Dynamic
+        type: Values
+      type: Hex
+    PIN_67_LAT:
+      attributes:
+        id: PIN_67_LAT
+      children:
+      - children:
+        - attributes:
+            value: High
           type: User
         type: Values
       type: String

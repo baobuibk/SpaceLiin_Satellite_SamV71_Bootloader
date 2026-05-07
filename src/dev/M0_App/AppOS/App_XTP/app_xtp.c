@@ -172,24 +172,33 @@ static void IdleReboot_Process(void)
 {
     if (!s_idle_reboot_armed) return;
 
-    static uint32_t s_last_rx_bytes = 0U;
+    static uint32_t s_last_rx_bytes   = 0U;
+    static uint32_t s_last_active_tick = 0U;
+
+    uint32_t now = Utils_GetTick();
+
     if (sam_stats.rx_bytes != s_last_rx_bytes) {
         s_last_rx_bytes    = sam_stats.rx_bytes;
-        s_idle_reboot_tick = Utils_GetTick();
+        s_idle_reboot_tick = now;
         s_last_bucket      = IDLE_REBOOT_MS / 10000U;
+        s_last_active_tick = now;     
         return;
     }
 
-    uint32_t now     = Utils_GetTick();
     uint32_t elapsed = now - s_idle_reboot_tick;
     uint32_t remain  = (elapsed < IDLE_REBOOT_MS) ? (IDLE_REBOOT_MS - elapsed) : 0U;
+    uint32_t bucket  = remain / 10000U;
 
-    uint32_t bucket = remain / 10000U;
     if (bucket != s_last_bucket) {
         s_last_bucket = bucket;
-        if (remain > 0U)
-            xTP_Log("[xBLD] Auto-boot in %us... (any key to cancel)",
-                    (unsigned)(remain / 1000U));
+        if (remain > 0U) {
+            // Only print when entering a new bucket, to avoid spamming logs.
+            // 3000ms 
+            if ((now - s_last_active_tick) >= 3000U) {
+                xTP_Log("[xBLD] Auto-boot in %us... (any key to cancel)",
+                        (unsigned)(remain / 1000U));
+            }
+        }
     }
 
     if (elapsed >= IDLE_REBOOT_MS) {
