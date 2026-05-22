@@ -9,6 +9,7 @@
 #include "device.h"
 #include <string.h>
 #include "Tick/tick.h"
+#include "USART_SPI_FRAM/fram_MB85RS2.h"
 
 /* Peripheral de-initialization function */
 /* WARNING !!!!!!!!!!
@@ -31,10 +32,21 @@ __attribute__((weak)) void xBLD_Peripheral_DeInit(void)
     UART2_REGS->UART_CR  = UART_CR_RSTRX_Msk | UART_CR_RSTTX_Msk
                          | UART_CR_RXDIS_Msk  | UART_CR_TXDIS_Msk;
  
-                         
-    QSPI_REGS->QSPI_IDR = 0xFFFFFFFFU;          /* disable all IRQs              */
-    QSPI_REGS->QSPI_CR  = QSPI_CR_QSPIDIS_Msk;  /* disable QSPI controller       */
- 
+
+    timeout = 500000UL;
+    while (!(USART2_REGS->US_CSR & US_CSR_SPI_TXEMPTY_Msk) && timeout--)
+    {
+        __asm volatile ("nop");
+    }
+
+    USART2_REGS->US_IDR = 0xFFFFFFFFU;
+    USART2_REGS->US_CR =
+          US_CR_SPI_RSTRX_Msk
+        | US_CR_SPI_RSTTX_Msk
+        | US_CR_SPI_RSTSTA_Msk
+        | US_CR_SPI_RXDIS_Msk
+        | US_CR_SPI_TXDIS_Msk;    
+
     /* ----------------------------------------------------------------------*
      * e.g.:                                                                 *
      *   SPI0_REGS->SPI_IDR  = 0xFFFFFFFFU;                                  *
@@ -45,18 +57,22 @@ __attribute__((weak)) void xBLD_Peripheral_DeInit(void)
      *-----------------------------------------------------------------------*/
 }
 
-/* DCache macros */
-#if XBLD_USE_DCACHE_OPS
-  #define XBLD_DCACHE_INVALIDATE(addr, len)  do { \
-      SCB_InvalidateDCache_by_Addr((void*)(addr), (int32_t)(len)); \
-      __DSB(); __ISB(); } while(0)
-  #define XBLD_DCACHE_CLEAN_INVALIDATE()     do { \
-      SCB_CleanInvalidateDCache(); SCB_InvalidateICache(); \
-      __DSB(); __ISB(); } while(0)
-#else
-  #define XBLD_DCACHE_INVALIDATE(addr, len)  do { __DSB(); __ISB(); } while(0)
-  #define XBLD_DCACHE_CLEAN_INVALIDATE()     do { __DSB(); __ISB(); } while(0)
-#endif
+#define XBLD_DCACHE_INVALIDATE(addr, len)  do {                          \
+    if (SCB->CCR & SCB_CCR_DC_Msk) {                                     \
+        SCB_InvalidateDCache_by_Addr((void*)(addr), (int32_t)(len));     \
+    }                                                                     \
+    __DSB(); __ISB();                                                     \
+} while(0)
+
+#define XBLD_DCACHE_CLEAN_INVALIDATE()  do {                             \
+    if (SCB->CCR & SCB_CCR_DC_Msk) {                                     \
+        SCB_CleanInvalidateDCache();                                      \
+    }                                                                     \
+    if (SCB->CCR & SCB_CCR_IC_Msk) {                                     \
+        SCB_InvalidateICache();                                           \
+    }                                                                     \
+    __DSB(); __ISB();                                                     \
+} while(0)
 
 /* IRQ barrier macros */
 #if XBLD_USE_IRQ_BARRIER
@@ -97,6 +113,15 @@ static int port_flash_erase(uint32_t addr, uint32_t size)
 
         cur += EFC_SECTORSIZE;
     }
+    {
+        volatile uint32_t delay = 5000000U;
+
+        while (delay--)
+        {
+            __asm volatile ("nop");
+        }
+    }
+
     return XBLD_PORT_OK;
 }
 
@@ -124,6 +149,15 @@ static int port_flash_write(uint32_t addr, const uint8_t *data, uint32_t len)
             return XBLD_PORT_ERR;
         }
         while (EFC_IsBusy());
+        
+        {
+            volatile uint32_t delay = 12500U;
+
+            while (delay--)
+            {
+                __asm volatile ("nop");
+            }
+        }
 
         XBLD_IRQ_RESTORE();
 
@@ -138,6 +172,13 @@ static int port_flash_write(uint32_t addr, const uint8_t *data, uint32_t len)
 static int port_flash_read(uint32_t addr, uint8_t *data, uint32_t len)
 {
     if (data == NULL || len == 0U) return XBLD_PORT_ERR;
+    {
+        volatile uint32_t delay = 100U;
+        while (delay--)
+        {
+            __asm volatile ("nop");
+        }
+    }
     XBLD_DCACHE_INVALIDATE(addr, len);
     memcpy(data, (const void *)addr, len);
     return XBLD_PORT_OK;
@@ -146,6 +187,30 @@ static int port_flash_read(uint32_t addr, uint8_t *data, uint32_t len)
 /* Tick */
 static uint32_t port_get_tick(void) { 
     return Utils_GetTick(); 
+}
+
+/* ROM */
+static uint8_t port_get_boot_cause(void)
+{
+    uint32_t rtype = (RSTC_REGS->RSTC_SR & RSTC_SR_RSTTYP_Msk)
+                     >> RSTC_SR_RSTTYP_Pos;
+ 
+    /* RSTTYP 0..4 are valid on SAMV71; anything else -> unknown */
+    return (rtype <= 4U) ? (uint8_t)rtype : 0xFFU;
+}
+
+static int port_rom_read(uint32_t addr, uint8_t *data, uint32_t len)
+{
+    if (data == NULL || len == 0U) return XBLD_PORT_ERR;
+    return (FRAM_SPI_ReadMem(addr, data, (uint16_t)len) == E_OK)
+           ? XBLD_PORT_OK : XBLD_PORT_ERR;
+}
+
+static int port_rom_write(uint32_t addr, const uint8_t *data, uint32_t len)
+{
+    if (data == NULL || len == 0U) return XBLD_PORT_ERR;
+    return (FRAM_SPI_WriteMem(addr, (uint8_t *)(uintptr_t)data, (uint16_t)len) == E_OK)
+           ? XBLD_PORT_OK : XBLD_PORT_ERR;
 }
 
 /* System reset */
@@ -211,14 +276,17 @@ void xBLD_ForceJump(uint32_t app_vector_addr)
 xBLD_Port_t xBLD_GetDefaultPort(void)
 {
     xBLD_Port_t port = {
-        .flash_init   = port_flash_init,
-        .flash_erase  = port_flash_erase,
-        .flash_write  = port_flash_write,
-        .flash_read   = port_flash_read,
-        .get_tick     = port_get_tick,
-        .system_reset = port_system_reset,
-        .jump_to_app  = port_jump_to_app,
-        .poll_fn      = NULL,
+        .flash_init     = port_flash_init,
+        .flash_erase    = port_flash_erase,
+        .flash_write    = port_flash_write,
+        .flash_read     = port_flash_read,
+        .get_tick       = port_get_tick,
+        .get_boot_cause = port_get_boot_cause,
+        .rom_read       = port_rom_read,
+        .rom_write      = port_rom_write,
+        .system_reset   = port_system_reset,
+        .jump_to_app    = port_jump_to_app,
+        .poll_fn        = NULL,
     };
     return port;
 }

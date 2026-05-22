@@ -220,6 +220,9 @@ void __attribute__((optimize("-O1"), section(".text.Reset_Handler"), long_call, 
     /* Initialize the C library */
     __libc_init_array();
 
+    /* Enable ICache (CMSIS-Core API) */
+    SCB_EnableICache();
+
     /* Call the optional application-provided _on_bootstrap() function. */
     _on_bootstrap();
 

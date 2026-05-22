@@ -1,0 +1,70 @@
+# Ver 1.0.0
+
+# Ver 1.1.0 20/05/2026 00:00:00 --------------------------------------------------
+0. Init PB12 for preventing flash erased bug
+1. Increase Baudrate to 250K
+2. Dual slot memory with backup, sector 0 now only use for bootloader:
+	- Bootloader		0x00400000	128 KB
+	- Slot 0 header		0x00420000	512 B	Image header slot 0 (main)
+	- Slot 0 app		0x00420200	1023 KB Code slot 0
+	- Slot 1 header		0x00520000	512 B	Image header slot 1 (backup)
+	- Slot 1 app		0x00520200	895 KB	Code slot 1
+
+3. New bootflow with backup slot:
+Power on / Reset
+    │
+    ├─ SharedData magic == STAY_IN_BL?  ──YES -> Stay in bootloader
+    │
+    ├─ [Slot 0] Verify image
+    │       FAIL ──────────────────────────────> Check Slot 1
+    │       OK
+    │       │
+    │       └─ Countdown 3s (Any key to abort)
+    │               User keypressed ───────────> Stay in bootloader
+    │               Timeout ───────────────────> Jump Slot 0  [v]
+    │
+    ├─ [Slot 1] Verify image  (only when slot 0 FAIL)
+    │       FAIL ──────────────────────────────> Stay in bootloader
+    │       OK
+    │       │
+    │       └─ Countdown 60s  (log "booting backup in Xs")
+    │               User keypressed ───────────> Stay in bootloader
+    │               Timeout ───────────────────> Jump Slot 1  [v]
+    │
+    └─ Both fail / user abort ─────────────────> Stay in bootloader
+
+4. xBLD command change
+	- bping new struct return
+	- berase                    -> erase slot 0 (main)   ← default, backward compat
+	- berase 0                  -> erase slot 0 (main)
+	- berase 1                  -> erase slot 1 (backup)
+	- bverify                   -> verify slot 0
+	- bverify 0                 -> verify slot 0
+	- bverify 1                 -> verify slot 1
+	- bjump                     -> jump slot 0
+	- bjump 0                   -> jump slot 0
+	- bjump 1                   -> jump slot 1
+	- bstatus
+
+5. Write Command Automatically detected slot from address
+
+6. Signing Tool (xbld_sign.py) new argument: --slot
+
+7. Linker script update:
+Slot 0 (main app)
+MEMORY
+{
+    rom (rx)        : ORIGIN = 0x00420200, LENGTH = 0x000FFE00
+    SharedData (rwx): ORIGIN = 0x20400000, LENGTH = 0x00000020
+    ram (rwx)       : ORIGIN = 0x20400020, LENGTH = 0x0005FFE0
+}
+Slot 1 (backup app)
+MEMORY
+{
+    rom (rx)        : ORIGIN = 0x00520200, LENGTH = 0x000DFE00
+    SharedData (rwx): ORIGIN = 0x20400000, LENGTH = 0x00000020
+    ram (rwx)       : ORIGIN = 0x20400020, LENGTH = 0x0005FFE0
+}
+
+8. _xbld_shared_data_start.
+9. Add BootCount BootCause BootHistory support

@@ -18,6 +18,8 @@ extern "C" {
 #define XBLD_CMD_JUMP          0x43U
 #define XBLD_CMD_STATUS        0x44U
 #define XBLD_CMD_READ          0x45U
+#define XBLD_CMD_BCOUNT        0x46U
+#define XBLD_CMD_BHISTORY      0x47U
 
 /* Write frame layout */
 #define XBLD_WRITE_ADDR_SIZE   4U
@@ -28,34 +30,49 @@ extern "C" {
 #define XBLD_WRITE_ACK_OK      0x00U
 #define XBLD_WRITE_ACK_ERR     0x01U
 
-/* Flash geometry */
-#define XBLD_SECTOR_SIZE        8192U
+/* Flash geometry - SAMV71Q21B sector size 128 KB */
+#define XBLD_SECTOR_SIZE        131072U   /* 128 KB */
 
-/* Memory map */
-#ifndef XBLD_APP_HDR_ADDR
-#define XBLD_APP_HDR_ADDR      0x0040C000U
-#endif
-
+/* =========================================================================
+ * Memory map - dual slot
+ *
+ *   0x00400000  Bootloader  128 KB
+ *   0x00420000  Slot 0 hdr  512 B   main app
+ *   0x00420200  Slot 0 app  ~1023 KB
+ *   0x00520000  Slot 1 hdr  512 B   backup app
+ *   0x00520200  Slot 1 app  ~895 KB
+ *   0x005FFFFF  End of 2 MB flash
+ * =========================================================================*/
 #ifndef XBLD_IMAGE_HDR_SIZE
 #define XBLD_IMAGE_HDR_SIZE    512U
 #endif
 
-#define XBLD_APP_START_ADDR    (XBLD_APP_HDR_ADDR + XBLD_IMAGE_HDR_SIZE)
-
-#ifndef XBLD_APP_MAX_SIZE
-#define XBLD_APP_MAX_SIZE      0x001F3E00U
+/* Slot 0 - main */
+#ifndef XBLD_SLOT0_HDR_ADDR
+#define XBLD_SLOT0_HDR_ADDR    0x00420000U
 #endif
+#ifndef XBLD_SLOT0_MAX_SIZE
+#define XBLD_SLOT0_MAX_SIZE    0x000FFE00U   /* 1023 KB */
+#endif
+
+/* Slot 1 - backup */
+#ifndef XBLD_SLOT1_HDR_ADDR
+#define XBLD_SLOT1_HDR_ADDR    0x00520000U
+#endif
+#ifndef XBLD_SLOT1_MAX_SIZE
+#define XBLD_SLOT1_MAX_SIZE    0x000DFE00U   /* 895 KB */
+#endif
+
+/* Legacy aliases - slot 0 is main */
+#define XBLD_APP_HDR_ADDR      XBLD_SLOT0_HDR_ADDR
+#define XBLD_APP_MAX_SIZE      XBLD_SLOT0_MAX_SIZE
+#define XBLD_APP_START_ADDR    (XBLD_SLOT0_HDR_ADDR + XBLD_IMAGE_HDR_SIZE)
+
+/* Number of slots */
+#define XBLD_NUM_SLOTS         2U
 
 #ifndef XBLD_HW_ID
 #define XBLD_HW_ID             1U
-#endif
-
-/* =========================================================================
- * DCache operations (Cortex-M7)
- * 0 = disabled (safe default), 1 = enabled
- * =========================================================================*/
-#ifndef XBLD_USE_DCACHE_OPS
-#define XBLD_USE_DCACHE_OPS    0
 #endif
 
 /* =========================================================================
@@ -74,9 +91,14 @@ extern "C" {
 #define XBLD_IMAGE_MAGIC       0xB007C0DEU
 #define XBLD_IMAGE_HDR_VERSION 1U
 
-/* Autoboot */
+/* Autoboot - slot 0 (main) */
 #ifndef XBLD_AUTOBOOT_TIMEOUT_S
 #define XBLD_AUTOBOOT_TIMEOUT_S   3U
+#endif
+
+/* Autoboot - slot 1 (backup) */
+#ifndef XBLD_BACKUP_BOOT_TIMEOUT_S
+#define XBLD_BACKUP_BOOT_TIMEOUT_S  60U
 #endif
 
 #ifndef XBLD_AUTOBOOT_POLL_MS

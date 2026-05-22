@@ -2,10 +2,6 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group>
-            <file>file:/F:/F00_Workspace/06_SAT_SAM/MCU/MainProject/07_BOOTLOADER/src/dev/M0_App/AppOS/App_Alive/app_alive.c</file>
-            <file>file:/F:/F00_Workspace/06_SAT_SAM/MCU/MainProject/07_BOOTLOADER/src/dev/M3_Devices/IO_ExWD-TPL5010/wd_tpl5010.c</file>
-            <file>file:/F:/F00_Workspace/06_SAT_SAM/MCU/MainProject/07_BOOTLOADER/src/config/default/peripheral/pio/plib_pio.h</file>
-        </group>
+        <group/>
     </open-files>
 </project-private>

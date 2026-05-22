@@ -5,7 +5,8 @@
 SCH_TASK_HANDLE blink_handle = SCH_DEFAULT_TASK_HANDLE;
 
 static void Blink_Run(void) {
-    LED_PA23_Toggle();
+    // LED_PA23_Toggle();
+    LED_DEBUG_Toggle();
 }
 
 void App_Blink_Register(void) {

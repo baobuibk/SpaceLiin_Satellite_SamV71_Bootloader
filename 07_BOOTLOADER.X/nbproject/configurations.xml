@@ -184,6 +184,8 @@
               </logicalFolder>
               <logicalFolder name="uart" displayName="uart" projectFiles="true">
               </logicalFolder>
+              <logicalFolder name="usart" displayName="usart" projectFiles="true">
+              </logicalFolder>
             </logicalFolder>
             <logicalFolder name="stdio" displayName="stdio" projectFiles="true">
             </logicalFolder>
@@ -229,6 +231,7 @@
               <itemPath>../src/dev/M1_SysApp/xbld/xbld_image.h</itemPath>
               <itemPath>../src/dev/M1_SysApp/xbld/xbld_port.h</itemPath>
               <itemPath>../src/dev/M1_SysApp/xbld/xbld_shared.h</itemPath>
+              <itemPath>../src/dev/M1_SysApp/xbld/xbld_bootinfo.h</itemPath>
             </logicalFolder>
             <logicalFolder name="xcli" displayName="xcli" projectFiles="true">
               <itemPath>../src/dev/M1_SysApp/xcli/xcli.h</itemPath>
@@ -255,6 +258,9 @@
               <itemPath>../src/dev/M2_BSP/UART/uart_dma.h</itemPath>
               <itemPath>../src/dev/M2_BSP/UART/uart_irq.h</itemPath>
             </logicalFolder>
+            <logicalFolder name="USART_SPI" displayName="USART_SPI" projectFiles="true">
+              <itemPath>../src/dev/M2_BSP/USART_SPI/usart_spi_polling.h</itemPath>
+            </logicalFolder>
           </logicalFolder>
           <logicalFolder name="M3_Devices" displayName="M3_Devices" projectFiles="true">
             <logicalFolder name="IO_ExWD-TPL5010"
@@ -263,6 +269,11 @@
               <itemPath>../src/dev/M3_Devices/IO_ExWD-TPL5010/wd_tpl5010.h</itemPath>
             </logicalFolder>
             <logicalFolder name="QSPI_FLASH" displayName="QSPI_FLASH" projectFiles="true">
+            </logicalFolder>
+            <logicalFolder name="USART_SPI_FRAM"
+                           displayName="USART_SPI_FRAM"
+                           projectFiles="true">
+              <itemPath>../src/dev/M3_Devices/USART_SPI_FRAM/fram_MB85RS2.h</itemPath>
             </logicalFolder>
           </logicalFolder>
           <logicalFolder name="M4_Middlewares"
@@ -397,6 +408,8 @@
               </logicalFolder>
               <logicalFolder name="uart" displayName="uart" projectFiles="true">
               </logicalFolder>
+              <logicalFolder name="usart" displayName="usart" projectFiles="true">
+              </logicalFolder>
             </logicalFolder>
             <logicalFolder name="stdio" displayName="stdio" projectFiles="true">
             </logicalFolder>
@@ -438,6 +451,7 @@
               <itemPath>../src/dev/M1_SysApp/xbld/xbld_image.c</itemPath>
               <itemPath>../src/dev/M1_SysApp/xbld/xbld_port.c</itemPath>
               <itemPath>../src/dev/M1_SysApp/xbld/xbld_port_template.c</itemPath>
+              <itemPath>../src/dev/M1_SysApp/xbld/xbld_bootinfo.c</itemPath>
             </logicalFolder>
             <logicalFolder name="xcli" displayName="xcli" projectFiles="true">
               <itemPath>../src/dev/M1_SysApp/xcli/xcli.c</itemPath>
@@ -461,6 +475,9 @@
               <itemPath>../src/dev/M2_BSP/UART/uart_dma.c</itemPath>
               <itemPath>../src/dev/M2_BSP/UART/uart_irq.c</itemPath>
             </logicalFolder>
+            <logicalFolder name="USART_SPI" displayName="USART_SPI" projectFiles="true">
+              <itemPath>../src/dev/M2_BSP/USART_SPI/usart_spi_polling.c</itemPath>
+            </logicalFolder>
           </logicalFolder>
           <logicalFolder name="M3_Devices" displayName="M3_Devices" projectFiles="true">
             <logicalFolder name="IO_ExWD-TPL5010"
@@ -469,6 +486,11 @@
               <itemPath>../src/dev/M3_Devices/IO_ExWD-TPL5010/wd_tpl5010.c</itemPath>
             </logicalFolder>
             <logicalFolder name="QSPI_FLASH" displayName="QSPI_FLASH" projectFiles="true">
+            </logicalFolder>
+            <logicalFolder name="USART_SPI_FRAM"
+                           displayName="USART_SPI_FRAM"
+                           projectFiles="true">
+              <itemPath>../src/dev/M3_Devices/USART_SPI_FRAM/fram_MB85RS2.c</itemPath>
             </logicalFolder>
           </logicalFolder>
           <logicalFolder name="M4_Middlewares"
@@ -832,6 +854,8 @@
         <property key="memories.programmemory" value="true"/>
         <property key="memories.programmemory.ranges" value="400000-5fffff"/>
         <property key="poweroptions.powerenable" value="false"/>
+        <property key="programmerToGoFilePath"
+                  value="F:/F00_Workspace/06_SAT_SAM/MCU/MainProject/07_BOOTLOADER/07_BOOTLOADER.X/debug/default/07_BOOTLOADER_ptg"/>
         <property key="programoptions.eraseb4program" value="true"/>
         <property key="programoptions.preservedataflash" value="false"/>
         <property key="programoptions.preservedataflash.ranges"

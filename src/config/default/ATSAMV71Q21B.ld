@@ -107,8 +107,8 @@ ENTRY(__XC32_RESET_HANDLER_NAME)
  *************************************************************************/
 MEMORY
 {
-    /* Bootloader region: 48 KB */
-    rom (rx)        : ORIGIN = 0x00400000, LENGTH = 0x0000C000
+    /* Bootloader region: 128 KB */
+    rom (rx)        : ORIGIN = 0x00400000, LENGTH = 0x00020000
 
     /* Shared RAM: 32 bytes ? persists across software reset.
      * Must match userapp linker exactly. */
@@ -159,7 +159,7 @@ SECTIONS
 {
     .shared_data (NOLOAD) :
     {
-        _shared_data_start = .;
+        _xbld_shared_data_start = .;
         KEEP(*(.shared_data .shared_data.*))
         . = ALIGN(4);
     } > SharedData

@@ -11,6 +11,8 @@
 #include "xcli/xcli.h"
 #include "xcli/xcli_commands.h"
 #include "xbld/xbld.h"
+#include "xbld/xbld_bootinfo.h"
+#include "USART_SPI_FRAM/fram_MB85RS2.h"
 #include "definitions.h"
 /* =========================================================================
  * Private Definitions
@@ -32,6 +34,64 @@ static uint32_t s_idle_reboot_tick  = 0U;
 static uint32_t s_j_first_tick = 0U;
 static uint8_t  s_j_count      = 0U;
 static uint32_t s_last_bucket       = 0xFFFFFFFFU;
+
+static const uint32_t s_baud_table[] = { 250000U, 500000U, 1000000U, 921600U, 115200U };
+#define BAUD_TABLE_LEN  (sizeof(s_baud_table) / sizeof(s_baud_table[0]))
+static uint8_t s_baud_idx = 0U;
+/* =========================================================================
+ * FRAM Test
+ * =========================================================================*/
+#define FRAM_BOOT_HISTORY_ADDR  (0x000100UL)
+#define FRAM_TEST_ADDR          (0x000010UL) 
+#define FRAM_TEST_LEN           (8U)      
+ 
+static void FRAM_Test_Write(void)
+{
+    uint8_t wbuf[FRAM_TEST_LEN];
+    uint32_t seed = Utils_GetTick();
+    for (uint8_t i = 0U; i < FRAM_TEST_LEN; i++)
+    {
+        seed = seed * 1664525UL + 1013904223UL;  
+        wbuf[i] = (uint8_t)(seed >> 16U);
+    }
+ 
+    xTP_Log("[FRAM] Writing %u bytes to 0x%06lX:", FRAM_TEST_LEN, (unsigned long)FRAM_TEST_ADDR);
+    xTP_Log("[FRAM] W: %02X %02X %02X %02X %02X %02X %02X %02X",
+            wbuf[0], wbuf[1], wbuf[2], wbuf[3],
+            wbuf[4], wbuf[5], wbuf[6], wbuf[7]);
+ 
+    Std_ReturnType status = FRAM_SPI_WriteMem(FRAM_TEST_ADDR, wbuf, FRAM_TEST_LEN);
+ 
+    if (status == E_OK)
+    {
+        xTP_Log("[FRAM] Write OK");
+    }
+    else
+    {
+        xTP_Log("[FRAM] Write FAILED (status=%d)", (int)status);
+    }
+}
+ 
+static void FRAM_Test_Read(void)
+{
+    uint8_t rbuf[FRAM_TEST_LEN];
+ 
+    xTP_Log("[FRAM] Reading %u bytes from 0x%06lX...", FRAM_TEST_LEN, (unsigned long)FRAM_TEST_ADDR);
+ 
+    Std_ReturnType status = FRAM_SPI_ReadMem(FRAM_TEST_ADDR, rbuf, FRAM_TEST_LEN);
+ 
+    if (status == E_OK)
+    {
+        xTP_Log("[FRAM] R: %02X %02X %02X %02X %02X %02X %02X %02X",
+                rbuf[0], rbuf[1], rbuf[2], rbuf[3],
+                rbuf[4], rbuf[5], rbuf[6], rbuf[7]);
+    }
+    else
+    {
+        xTP_Log("[FRAM] Read FAILED (status=%d)", (int)status);
+    }
+}
+
 /* =========================================================================
  * Functions
  * =========================================================================*/
@@ -75,7 +135,14 @@ void Process_User_Input(void)
         s_idle_reboot_tick  = Utils_GetTick(); 
         s_idle_reboot_armed = 1U;            
         s_last_bucket       = IDLE_REBOOT_MS / 10000U;
-        if (key == '1')
+
+        if (key == '0')
+        {
+            uint32_t t = Utils_GetTick();
+
+            xTP_Log("Key '0': Tick=%lu", (unsigned long)t);
+        }
+        else if (key == '1')
         {
             xTP_Log("Key '1': Sending xCLI ping self-test");
 
@@ -84,14 +151,39 @@ void Process_User_Input(void)
                                    0x42U,
                                    "ping 12345");
         }
-
-        else if (key == '0')
+        else if (key == '2')
         {
-            uint32_t t = Utils_GetTick();
-
-            xTP_Log("Key '0': Tick=%lu", (unsigned long)t);
+            FRAM_Test_Write();
         }
+        else if (key == '3')
+        {
+            FRAM_Test_Read();
+        }
+        else if (key == '4')
+        {
+            xBLD_BootInfo_Print();
+        }
+        else if (key == 'b')
+        {
+            s_baud_idx = (s_baud_idx + 1U) % BAUD_TABLE_LEN;
+            uint32_t new_baud = s_baud_table[s_baud_idx];
 
+            UART_SERIAL_SETUP setup = {
+                .baudRate = new_baud,
+                .parity   = UART_PARITY_NONE,
+            };
+
+            while (UART0_WriteIsBusy()) { ; }
+
+            if (UART0_SerialSetup(&setup, 0U))
+            {
+                xTP_Log("[BAUD] UART0 -> %lu bps", (unsigned long)new_baud);
+            }
+            else
+            {
+                xTP_Log("[BAUD] SerialSetup FAILED for %lu bps", (unsigned long)new_baud);
+            }
+        }
         else if (key == 'j')
         {
             now = Utils_GetTick();
@@ -254,6 +346,9 @@ void App_XTP_Register(void) {
     };
     bld_cfg.port.poll_fn = autoboot_poll;
     xBLD_Init(&sam_xbld, &bld_cfg);
+    uint8_t cause = bld_cfg.port.get_boot_cause
+                    ? bld_cfg.port.get_boot_cause() : 0xFFU;
+    xBLD_BootInfo_Record(&bld_cfg.port, cause);
     if (!xBLD_AutobootRun(&sam_xbld)) { 
         s_idle_reboot_armed = 1U;
         s_idle_reboot_tick  = Utils_GetTick();
@@ -265,6 +360,7 @@ void App_XTP_Register(void) {
 
     xTP_Log("xTP+xCLI ready.  CMD=0x%04X  RESP=0x%04X",
             (unsigned)XCLI_XTP_CMD_ID, (unsigned)XCLI_XTP_RESP_ID);
+    xTP_Log("xBLD Version 1.1.0");
 
 //  1ms priodic task is too low for high-throughput 
 //  Using main loop for high performance.
@@ -277,4 +373,5 @@ void App_XTP_Register(void) {
 //         .taskTick       = 0
 //     };
 //    SCH_TASK_CreateTask(&app_xtp_handle, &prop);
+    xBLD_BootInfo_Print();
 }

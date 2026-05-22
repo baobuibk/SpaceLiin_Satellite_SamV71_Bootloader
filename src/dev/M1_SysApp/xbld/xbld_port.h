@@ -22,6 +22,9 @@ typedef struct {
     int      (*flash_write)(uint32_t addr, const uint8_t *data, uint32_t len);
     int      (*flash_read)(uint32_t addr, uint8_t *data, uint32_t len);
     uint32_t (*get_tick)(void);
+    uint8_t  (*get_boot_cause)(void);
+    int      (*rom_read) (uint32_t addr, uint8_t *data,       uint32_t len);
+    int      (*rom_write)(uint32_t addr, const uint8_t *data, uint32_t len);
     void     (*system_reset)(void);
     void     (*jump_to_app)(uint32_t app_vector_addr);
     void     (*poll_fn)(void);

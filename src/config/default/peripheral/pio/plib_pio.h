@@ -98,6 +98,15 @@
 #define LED_PC9_Get()               ((PIOC_REGS->PIO_PDSR >> 9U) & 0x1U)
 #define LED_PC9_PIN                  PIO_PIN_PC9
 
+/*** Macros for LED_DEBUG pin ***/
+#define LED_DEBUG_Set()               (PIOB_REGS->PIO_SODR = ((uint32_t)1U<<12U))
+#define LED_DEBUG_Clear()             (PIOB_REGS->PIO_CODR = ((uint32_t)1U<<12U))
+#define LED_DEBUG_Toggle()            (PIOB_REGS->PIO_ODSR ^= ((uint32_t)1U<<12U))
+#define LED_DEBUG_OutputEnable()      (PIOB_REGS->PIO_OER = ((uint32_t)1U<<12U))
+#define LED_DEBUG_InputEnable()       (PIOB_REGS->PIO_ODR = ((uint32_t)1U<<12U))
+#define LED_DEBUG_Get()               ((PIOB_REGS->PIO_PDSR >> 12U) & 0x1U)
+#define LED_DEBUG_PIN                  PIO_PIN_PB12
+
 
 // *****************************************************************************
 /* PIO Port

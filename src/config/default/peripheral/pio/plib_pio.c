@@ -59,6 +59,8 @@
 void PIO_Initialize ( void )
 {
     MATRIX_REGS->CCFG_SYSIO = 0x0;
+    /* Selected System IO pins are configured as GPIO */
+    MATRIX_REGS->CCFG_SYSIO |= 0x1000UL;
 
     /************************ PIO A Initialization ************************/
     /* PORTA PIO Disable and Peripheral Enable*/
@@ -89,8 +91,8 @@ void PIO_Initialize ( void )
     /* PORTB Output Write Enable */
     ((pio_registers_t*)PIO_PORT_B)->PIO_OWER = PIO_OWER_Msk;
     /* PORTB Output Direction Enable */
-    ((pio_registers_t*)PIO_PORT_B)->PIO_OER = 0x0U;
-    ((pio_registers_t*)PIO_PORT_B)->PIO_ODR = ~0x0U;
+    ((pio_registers_t*)PIO_PORT_B)->PIO_OER = 0x1000U;
+    ((pio_registers_t*)PIO_PORT_B)->PIO_ODR = ~0x1000U;
     /* Initialize PORTB pin state */
     ((pio_registers_t*)PIO_PORT_B)->PIO_ODSR = 0x0U;
     /* PORTB drive control */

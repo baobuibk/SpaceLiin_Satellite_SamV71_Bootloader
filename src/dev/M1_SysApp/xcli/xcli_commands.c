@@ -230,16 +230,6 @@ void xCLI_RegisterBuiltins(xCLI_Instance_t *xcli)
         "version", "Report firmware/hardware version",      xcli_builtin_version);
     (void)xCLI_RegisterCommand(xcli, XCLI_CMD_REBOOT,
         "reboot",  "Reboot device [delay_ms]",              xcli_builtin_reboot);
-    (void)xCLI_RegisterCommand(xcli, XCLI_CMD_MEM,
-        "mem",     "Report heap statistics",                xcli_builtin_mem);
-    (void)xCLI_RegisterCommand(xcli, XCLI_CMD_GPIO_READ,
-        "gpio",    "gpio read <pin> | gpio write <pin> <v>",xcli_builtin_gpio);
-    (void)xCLI_RegisterCommand(xcli, XCLI_CMD_TEST,
-        "test",    "Read channel 0-7",                      test_handler);
-    (void)xCLI_RegisterCommand(xcli, XCLI_CMD_COUNTER,
-        "counter", "Increment counter [n|reset]",           counter_handler);
-    (void)xCLI_RegisterCommand(xcli, XCLI_CMD_CALC,
-        "calc",    "Arithmetic: calc <a> <+|-|*|/|%> <b>", calc_handler);
 }
 
 #endif /* XCLI_USE_BUILTIN_COMMANDS */

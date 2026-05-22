@@ -112,7 +112,7 @@ extern "C" {
 
 /** 1 = 256-entry lookup table (~512 B ROM for CRC-16, ~1 KB for CRC-32, fast)
  *  0 = bit-serial computation  (no ROM cost, ~8X slower) */
-#define XTP_CRC_USE_TABLE   1
+#define XTP_CRC_USE_TABLE   0
 
 /* =========================================================================
  * ECC  -  PROT bit 5

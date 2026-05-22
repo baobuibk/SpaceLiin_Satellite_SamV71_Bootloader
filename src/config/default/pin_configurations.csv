@@ -65,13 +65,13 @@
 76,PC28,,Available,In,,,,,,,
 77,PA4,,Available,In,,,,,,,
 78,PD16,,USART2_TXD2,n/a,n/a,No,Disabled,No,No,Disabled,Low
-79,PB6,,Available,In,,,,,,,
+79,PB6,,ICE_TMS/SWDIO,n/a,n/a,No,Disabled,No,No,Disabled,Low
 82,PC8,,Available,In,,,,,,,
 84,PD14,,Available,In,,,,,,,
 86,PC9,LED_PC9,GPIO,Out,Low,No,Disabled,No,No,Disabled,Low
-87,PB12,,Available,In,,,,,,,
+87,PB12,LED_DEBUG,GPIO,Out,Low,No,Disabled,No,No,Disabled,Low
 88,PD13,,Available,In,,,,,,,
-89,PB7,,Available,In,,,,,,,
+89,PB7,,ICE_TCK/SWDCLK,n/a,n/a,No,Disabled,No,No,Disabled,Low
 90,PC10,,Available,In,,,,,,,
 91,PA3,,Available,In,,,,,,,
 92,PD12,,Available,In,,,,,,,
