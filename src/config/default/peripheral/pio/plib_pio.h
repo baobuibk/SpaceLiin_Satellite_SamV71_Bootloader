@@ -71,15 +71,6 @@
 #define WD_PE1_Get()               ((PIOE_REGS->PIO_PDSR >> 1U) & 0x1U)
 #define WD_PE1_PIN                  PIO_PIN_PE1
 
-/*** Macros for LED_PA23 pin ***/
-#define LED_PA23_Set()               (PIOA_REGS->PIO_SODR = ((uint32_t)1U<<23U))
-#define LED_PA23_Clear()             (PIOA_REGS->PIO_CODR = ((uint32_t)1U<<23U))
-#define LED_PA23_Toggle()            (PIOA_REGS->PIO_ODSR ^= ((uint32_t)1U<<23U))
-#define LED_PA23_OutputEnable()      (PIOA_REGS->PIO_OER = ((uint32_t)1U<<23U))
-#define LED_PA23_InputEnable()       (PIOA_REGS->PIO_ODR = ((uint32_t)1U<<23U))
-#define LED_PA23_Get()               ((PIOA_REGS->PIO_PDSR >> 23U) & 0x1U)
-#define LED_PA23_PIN                  PIO_PIN_PA23
-
 /*** Macros for FRAM_NCS pin ***/
 #define FRAM_NCS_Set()               (PIOD_REGS->PIO_SODR = ((uint32_t)1U<<19U))
 #define FRAM_NCS_Clear()             (PIOD_REGS->PIO_CODR = ((uint32_t)1U<<19U))
@@ -88,15 +79,6 @@
 #define FRAM_NCS_InputEnable()       (PIOD_REGS->PIO_ODR = ((uint32_t)1U<<19U))
 #define FRAM_NCS_Get()               ((PIOD_REGS->PIO_PDSR >> 19U) & 0x1U)
 #define FRAM_NCS_PIN                  PIO_PIN_PD19
-
-/*** Macros for LED_PC9 pin ***/
-#define LED_PC9_Set()               (PIOC_REGS->PIO_SODR = ((uint32_t)1U<<9U))
-#define LED_PC9_Clear()             (PIOC_REGS->PIO_CODR = ((uint32_t)1U<<9U))
-#define LED_PC9_Toggle()            (PIOC_REGS->PIO_ODSR ^= ((uint32_t)1U<<9U))
-#define LED_PC9_OutputEnable()      (PIOC_REGS->PIO_OER = ((uint32_t)1U<<9U))
-#define LED_PC9_InputEnable()       (PIOC_REGS->PIO_ODR = ((uint32_t)1U<<9U))
-#define LED_PC9_Get()               ((PIOC_REGS->PIO_PDSR >> 9U) & 0x1U)
-#define LED_PC9_PIN                  PIO_PIN_PC9
 
 /*** Macros for LED_DEBUG pin ***/
 #define LED_DEBUG_Set()               (PIOB_REGS->PIO_SODR = ((uint32_t)1U<<12U))

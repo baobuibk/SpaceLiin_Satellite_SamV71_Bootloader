@@ -68,3 +68,10 @@ MEMORY
 
 8. _xbld_shared_data_start.
 9. Add BootCount BootCause BootHistory support
+10. Flexible Baudrate when pressed 'b'
+
+# Ver 1.1.0_a 07/06/2026 00:00:00 --------------------------------------------------
+1. Support HW EXP Ver 1.1.0 (competible with 1.0.0)
+2. Changed Blink indicator in bootloader mode
+3. Added 'r' for softreset in bootloader mode
+4. Removed some pin which did not use

@@ -5611,7 +5611,7 @@ data:
       children:
       - children:
         - attributes:
-            value: GPIO
+            value: ''
           type: User
         type: Values
       type: String
@@ -5654,7 +5654,7 @@ data:
       children:
       - children:
         - attributes:
-            value: GPIO
+            value: ''
           type: User
         type: Values
       type: String
@@ -5664,7 +5664,7 @@ data:
       children:
       - children:
         - attributes:
-            value: LED_PA23
+            value: ''
           type: User
         type: Values
       type: String
@@ -5674,7 +5674,7 @@ data:
       children:
       - children:
         - attributes:
-            value: GPIO
+            value: ''
           type: User
         type: Values
       type: String
@@ -5717,7 +5717,7 @@ data:
       children:
       - children:
         - attributes:
-            value: GPIO
+            value: ''
           type: User
         type: Values
       type: String
@@ -5727,7 +5727,7 @@ data:
       children:
       - children:
         - attributes:
-            value: LED_PC9
+            value: ''
           type: User
         type: Values
       type: String
@@ -5961,7 +5961,7 @@ data:
       - children:
         - attributes:
             id: core
-            value: '8388608'
+            value: '0'
           type: Dynamic
         type: Values
       type: Hex
@@ -5971,7 +5971,7 @@ data:
       children:
       - children:
         - attributes:
-            value: Out
+            value: ''
           type: User
         type: Values
       type: String
@@ -5982,7 +5982,7 @@ data:
       - children:
         - attributes:
             id: core
-            value: '512'
+            value: '0'
           type: Dynamic
         type: Values
       type: Hex
@@ -5992,7 +5992,7 @@ data:
       children:
       - children:
         - attributes:
-            value: Out
+            value: ''
           type: User
         type: Values
       type: String

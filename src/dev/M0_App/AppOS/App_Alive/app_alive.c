@@ -25,7 +25,7 @@ static void Alive_Run(void)
     if ((now - led_last) >= LED_PERIOD_MS)
     {
         led_last = now;
-        LED_PC9_Toggle();
+        // LED_PC9_Toggle();
     }
 
     /* --- Watchdog: HIGH / LOW --- */

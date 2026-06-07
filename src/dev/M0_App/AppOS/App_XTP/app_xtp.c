@@ -184,6 +184,12 @@ void Process_User_Input(void)
                 xTP_Log("[BAUD] SerialSetup FAILED for %lu bps", (unsigned long)new_baud);
             }
         }
+        else if (key == 'r')
+        {
+            xTP_Log("[SYS] Soft reset...");
+            while (UART0_WriteIsBusy()) { ; }
+            NVIC_SystemReset();
+        }
         else if (key == 'j')
         {
             now = Utils_GetTick();
@@ -228,35 +234,11 @@ void Process_User_Input(void)
 
 uint8_t xCLI_GpioRead(uint8_t pin)
 {
-    if (pin == 4U) {
-        return (uint8_t)LED_PA23_Get();
-    }
-    if (pin == 3U) {
-        return (uint8_t)LED_PC9_Get();
-    }
     return 0U;
 }
 
 uint8_t xCLI_GpioWrite(uint8_t pin, uint8_t val)
 {
-    if (pin == 4U) {
-        if (val) {
-            LED_PA23_Set();
-        } else {
-            LED_PA23_Clear();
-        }
-        return (uint8_t)LED_PA23_Get();
-    }
-
-    if (pin == 3U) {
-        if (val) {
-            LED_PC9_Set();
-        } else {
-            LED_PC9_Clear();
-        }
-        return (uint8_t)LED_PC9_Get();
-    }
-
     return 0U;
 }
 
@@ -361,6 +343,7 @@ void App_XTP_Register(void) {
     xTP_Log("xTP+xCLI ready.  CMD=0x%04X  RESP=0x%04X",
             (unsigned)XCLI_XTP_CMD_ID, (unsigned)XCLI_XTP_RESP_ID);
     xTP_Log("xBLD Version 1.1.0");
+    xTP_Log("HW Version 1.1.0");
 
 //  1ms priodic task is too low for high-throughput 
 //  Using main loop for high performance.
