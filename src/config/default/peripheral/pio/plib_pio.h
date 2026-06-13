@@ -89,6 +89,33 @@
 #define LED_DEBUG_Get()               ((PIOB_REGS->PIO_PDSR >> 12U) & 0x1U)
 #define LED_DEBUG_PIN                  PIO_PIN_PB12
 
+/*** Macros for POW_ONOFF_AI pin ***/
+#define POW_ONOFF_AI_Set()               (PIOA_REGS->PIO_SODR = ((uint32_t)1U<<2U))
+#define POW_ONOFF_AI_Clear()             (PIOA_REGS->PIO_CODR = ((uint32_t)1U<<2U))
+#define POW_ONOFF_AI_Toggle()            (PIOA_REGS->PIO_ODSR ^= ((uint32_t)1U<<2U))
+#define POW_ONOFF_AI_OutputEnable()      (PIOA_REGS->PIO_OER = ((uint32_t)1U<<2U))
+#define POW_ONOFF_AI_InputEnable()       (PIOA_REGS->PIO_ODR = ((uint32_t)1U<<2U))
+#define POW_ONOFF_AI_Get()               ((PIOA_REGS->PIO_PDSR >> 2U) & 0x1U)
+#define POW_ONOFF_AI_PIN                  PIO_PIN_PA2
+
+/*** Macros for IF_MCU_SHUTDOWN pin ***/
+#define IF_MCU_SHUTDOWN_Set()               (PIOD_REGS->PIO_SODR = ((uint32_t)1U<<8U))
+#define IF_MCU_SHUTDOWN_Clear()             (PIOD_REGS->PIO_CODR = ((uint32_t)1U<<8U))
+#define IF_MCU_SHUTDOWN_Toggle()            (PIOD_REGS->PIO_ODSR ^= ((uint32_t)1U<<8U))
+#define IF_MCU_SHUTDOWN_OutputEnable()      (PIOD_REGS->PIO_OER = ((uint32_t)1U<<8U))
+#define IF_MCU_SHUTDOWN_InputEnable()       (PIOD_REGS->PIO_ODR = ((uint32_t)1U<<8U))
+#define IF_MCU_SHUTDOWN_Get()               ((PIOD_REGS->PIO_PDSR >> 8U) & 0x1U)
+#define IF_MCU_SHUTDOWN_PIN                  PIO_PIN_PD8
+
+/*** Macros for POW_ONOFF_SOM pin ***/
+#define POW_ONOFF_SOM_Set()               (PIOD_REGS->PIO_SODR = ((uint32_t)1U<<5U))
+#define POW_ONOFF_SOM_Clear()             (PIOD_REGS->PIO_CODR = ((uint32_t)1U<<5U))
+#define POW_ONOFF_SOM_Toggle()            (PIOD_REGS->PIO_ODSR ^= ((uint32_t)1U<<5U))
+#define POW_ONOFF_SOM_OutputEnable()      (PIOD_REGS->PIO_OER = ((uint32_t)1U<<5U))
+#define POW_ONOFF_SOM_InputEnable()       (PIOD_REGS->PIO_ODR = ((uint32_t)1U<<5U))
+#define POW_ONOFF_SOM_Get()               ((PIOD_REGS->PIO_PDSR >> 5U) & 0x1U)
+#define POW_ONOFF_SOM_PIN                  PIO_PIN_PD5
+
 
 // *****************************************************************************
 /* PIO Port

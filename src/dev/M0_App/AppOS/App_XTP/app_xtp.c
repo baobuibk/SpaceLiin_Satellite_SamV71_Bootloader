@@ -31,13 +31,26 @@ xBLD_Instance_t  sam_xbld;
 static uint8_t  s_idle_reboot_armed = 0U;
 static uint32_t s_idle_reboot_tick  = 0U;
 #define IDLE_REBOOT_MS  60000U
+
 static uint32_t s_j_first_tick = 0U;
 static uint8_t  s_j_count      = 0U;
+
+static uint8_t  s_i_count      = 0U;
+static uint32_t s_i_first_tick = 0U;
+
+static uint8_t  s_e_count      = 0U;
+static uint32_t s_e_first_tick = 0U;
+
+static uint8_t  s_a_count      = 0U;
+static uint32_t s_a_first_tick = 0U;
+
 static uint32_t s_last_bucket       = 0xFFFFFFFFU;
 
 static const uint32_t s_baud_table[] = { 250000U, 500000U, 1000000U, 921600U, 115200U };
 #define BAUD_TABLE_LEN  (sizeof(s_baud_table) / sizeof(s_baud_table[0]))
 static uint8_t s_baud_idx = 0U;
+static uint8_t s_power_som = 1U;
+
 /* =========================================================================
  * FRAM Test
  * =========================================================================*/
@@ -124,6 +137,39 @@ void Process_User_Input(void)
 
             s_j_first_tick = 0U;
             s_j_count      = 0U;
+        }
+    }
+
+    /* ---- Auto timeout for 'i' ---- */
+    if (s_i_count == 1U)
+    {
+        if ((now - s_i_first_tick) > 2000U)
+        {
+            xTP_Log("[PWR] IFB: confirm timeout, cancelled");
+            s_i_first_tick = 0U;
+            s_i_count      = 0U;
+        }
+    }
+
+    /* ---- Auto timeout for 'e' ---- */
+    if (s_e_count == 1U)
+    {
+        if ((now - s_e_first_tick) > 2000U)
+        {
+            xTP_Log("[PWR] SOM: confirm timeout, cancelled");
+            s_e_first_tick = 0U;
+            s_e_count      = 0U;
+        }
+    }
+
+    /* ---- Auto timeout for 'a' ---- */
+    if (s_a_count == 1U)
+    {
+        if ((now - s_a_first_tick) > 2000U)
+        {
+            xTP_Log("[PWR] AIM: confirm timeout, cancelled");
+            s_a_first_tick = 0U;
+            s_a_count      = 0U;
         }
     }
 
@@ -227,6 +273,135 @@ void Process_User_Input(void)
                 /* Reset state */
                 s_j_first_tick = 0U;
                 s_j_count      = 0U;
+            }
+        }
+        else if (key == 'i')
+        {
+            /* ---- Toggle IF_MCU_SHUTDOWN (PD8): HIGH=ON, LOW=OFF (idle) ---- */
+            now = Utils_GetTick();
+            uint8_t cur = IF_MCU_SHUTDOWN_Get();
+
+            if (s_i_count == 0U)
+            {
+                /* First press - show current state and wait for confirm */
+                xTP_Log("[PWR] IFB: %s  (press 'i' again to turn %s)",
+                        cur ? "ON" : "OFF",
+                        cur ? "OFF" : "ON");
+                s_i_first_tick = now;
+                s_i_count      = 1U;
+            }
+            else
+            {
+                /* Second press - execute if within timeout */
+                uint32_t diff = now - s_i_first_tick;
+
+                if (diff <= 2000U)
+                {
+                    if (cur)
+                    {
+                        IF_MCU_SHUTDOWN_Clear();
+                        xTP_Log("[PWR] IFB: OFF");
+                    }
+                    else
+                    {
+                        IF_MCU_SHUTDOWN_Set();
+                        xTP_Log("[PWR] IFB: ON");
+                    }
+                }
+                else
+                {
+                    xTP_Log("[PWR] IFB: confirm timeout, cancelled");
+                }
+
+                /* Reset state */
+                s_i_first_tick = 0U;
+                s_i_count      = 0U;
+            }
+        }
+        else if (key == 'e')
+        {
+            /* ---- Toggle POW_ONOFF_SOM (PD5): HIGH=ON, LOW=OFF ---- */
+            now = Utils_GetTick();
+            uint8_t cur = POW_ONOFF_SOM_Get();
+
+            if (s_e_count == 0U)
+            {
+                /* First press - show current state and wait for confirm */
+                xTP_Log("[PWR] SOM: %s  (press 'e' again to turn %s)",
+                        cur ? "ON" : "OFF",
+                        cur ? "OFF" : "ON");
+                s_e_first_tick = now;
+                s_e_count      = 1U;
+            }
+            else
+            {
+                /* Second press - execute if within timeout */
+                uint32_t diff = now - s_e_first_tick;
+
+                if (diff <= 2000U)
+                {
+                    if (cur)
+                    {
+                        POW_ONOFF_SOM_Clear();
+                        xTP_Log("[PWR] SOM: OFF");
+                    }
+                    else
+                    {
+                        POW_ONOFF_SOM_Set();
+                        xTP_Log("[PWR] SOM: ON");
+                    }
+                }
+                else
+                {
+                    xTP_Log("[PWR] SOM: confirm timeout, cancelled");
+                }
+
+                /* Reset state */
+                s_e_first_tick = 0U;
+                s_e_count      = 0U;
+            }
+        }
+        else if (key == 'a')
+        {
+            /* ---- Toggle POW_ONOFF_AI (PA2): HIGH=ON, LOW=OFF ---- */
+            now = Utils_GetTick();
+            uint8_t cur = POW_ONOFF_AI_Get();
+
+            if (s_a_count == 0U)
+            {
+                /* First press - show current state and wait for confirm */
+                xTP_Log("[PWR] AIM: %s  (press 'a' again to turn %s)",
+                        cur ? "ON" : "OFF",
+                        cur ? "OFF" : "ON");
+                s_a_first_tick = now;
+                s_a_count      = 1U;
+            }
+            else
+            {
+                /* Second press - execute if within timeout */
+                uint32_t diff = now - s_a_first_tick;
+
+                if (diff <= 2000U)
+                {
+                    if (cur)
+                    {
+                        POW_ONOFF_AI_Clear();
+                        xTP_Log("[PWR] AIM: OFF");
+                    }
+                    else
+                    {
+                        POW_ONOFF_AI_Set();
+                        xTP_Log("[PWR] AIM: ON");
+                    }
+                }
+                else
+                {
+                    xTP_Log("[PWR] AIM: confirm timeout, cancelled");
+                }
+
+                /* Reset state */
+                s_a_first_tick = 0U;
+                s_a_count      = 0U;
             }
         }
     }
@@ -334,7 +509,9 @@ void App_XTP_Register(void) {
     if (!xBLD_AutobootRun(&sam_xbld)) { 
         s_idle_reboot_armed = 1U;
         s_idle_reboot_tick  = Utils_GetTick();
-        xTP_Log("[xBLD] Auto-boot in %us if no activity. Keys: '0'=tick '1'=ping 'j'+'j'=jump",
+        xTP_Log("[xBLD] Auto-boot in %us if no activity. "
+                "Keys: '0'=tick '1'=ping 'j'+'j'=jump "
+                "'i'+'i'=IFB  'e'+'e'=SOM  'a'+'a'=AIM",
                 (unsigned)(IDLE_REBOOT_MS / 1000U));
     }
     /* Example: add an application-specific command (ADC stub) */
@@ -344,6 +521,17 @@ void App_XTP_Register(void) {
             (unsigned)XCLI_XTP_CMD_ID, (unsigned)XCLI_XTP_RESP_ID);
     xTP_Log("xBLD Version 1.1.0");
     xTP_Log("HW Version 1.1.0");
+
+    /* ---- Print power pin states at boot ---- */
+    {
+        uint8_t som = POW_ONOFF_SOM_Get();
+        uint8_t ifb = IF_MCU_SHUTDOWN_Get();
+        uint8_t aim = POW_ONOFF_AI_Get();
+        xTP_Log("[PWR] Boot: SOM=%s  IFB=%s  AIM=%s",
+                som ? "ON" : "OFF",
+                ifb ? "ON" : "OFF",
+                aim ? "ON" : "OFF");
+    }
 
 //  1ms priodic task is too low for high-throughput 
 //  Using main loop for high performance.

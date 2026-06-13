@@ -75,7 +75,7 @@
 90,PC10,,Available,In,,,,,,,
 91,PA3,,Available,In,,,,,,,
 92,PD12,,Available,In,,,,,,,
-93,PA2,,Available,In,,,,,,,
+93,PA2,POW_ONOFF_AI,GPIO,Out,Low,No,Disabled,No,No,Disabled,Low
 94,PC11,,Available,In,,,,,,,
 97,PC14,,Available,In,,,,,,,
 98,PD11,,Available,In,,,,,,,
@@ -91,7 +91,7 @@
 110,PD9,,Available,In,,,,,,,
 111,PC18,,Available,In,,,,,,,
 112,PA28,,Available,In,,,,,,,
-113,PD8,,Available,In,,,,,,,
+113,PD8,IF_MCU_SHUTDOWN,GPIO,Out,Low,No,Disabled,No,No,Disabled,Low
 114,PA6,,Available,In,,,,,,,
 116,PA30,,Available,In,,,,,,,
 117,PC19,,Available,In,,,,,,,
@@ -101,7 +101,7 @@
 121,PD6,,Available,In,,,,,,,
 122,PC21,,Available,In,,,,,,,
 124,PC22,,Available,In,,,,,,,
-125,PD5,,Available,In,,,,,,,
+125,PD5,POW_ONOFF_SOM,GPIO,Out,High,No,Disabled,No,No,Disabled,Low
 126,PD4,,Available,In,,,,,,,
 127,PC23,,Available,In,,,,,,,
 128,PD3,,Available,In,,,,,,,

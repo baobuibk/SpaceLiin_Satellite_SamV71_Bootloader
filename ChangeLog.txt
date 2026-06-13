@@ -75,3 +75,7 @@ MEMORY
 2. Changed Blink indicator in bootloader mode
 3. Added 'r' for softreset in bootloader mode
 4. Removed some pin which did not use
+
+# Ver 1.1.0_b 13/06/2026 00:00:00 --------------------------------------------------
+1. Add support Control Power Pin from Bootloader
+	Usage: i+i: IFB e+e: EXP-MPU a+a: AIM

@@ -5961,7 +5961,7 @@ data:
       - children:
         - attributes:
             id: core
-            value: '0'
+            value: '4'
           type: Dynamic
         type: Values
       type: Hex
@@ -6243,7 +6243,7 @@ data:
       - children:
         - attributes:
             id: core
-            value: '524288'
+            value: '524576'
           type: Dynamic
         type: Values
       type: Hex
@@ -6264,7 +6264,7 @@ data:
       - children:
         - attributes:
             id: core
-            value: '524288'
+            value: '524320'
           type: Dynamic
         type: Values
       type: Hex
@@ -6398,6 +6398,136 @@ data:
       - children:
         - attributes:
             value: Alternate
+          type: User
+        type: Values
+      type: String
+    PIN_125_FUNCTION_TYPE:
+      attributes:
+        id: PIN_125_FUNCTION_TYPE
+      children:
+      - children:
+        - attributes:
+            value: GPIO
+          type: User
+        type: Values
+      type: String
+    PIN_125_PERIPHERAL_FUNCTION:
+      attributes:
+        id: PIN_125_PERIPHERAL_FUNCTION
+      children:
+      - children:
+        - attributes:
+            value: GPIO
+          type: User
+        type: Values
+      type: String
+    PIN_125_FUNCTION_NAME:
+      attributes:
+        id: PIN_125_FUNCTION_NAME
+      children:
+      - children:
+        - attributes:
+            value: POW_ONOFF_SOM
+          type: User
+        type: Values
+      type: String
+    PIN_125_DIR:
+      attributes:
+        id: PIN_125_DIR
+      children:
+      - children:
+        - attributes:
+            value: Out
+          type: User
+        type: Values
+      type: String
+    PIN_125_LAT:
+      attributes:
+        id: PIN_125_LAT
+      children:
+      - children:
+        - attributes:
+            value: High
+          type: User
+        type: Values
+      type: String
+    PIN_113_FUNCTION_TYPE:
+      attributes:
+        id: PIN_113_FUNCTION_TYPE
+      children:
+      - children:
+        - attributes:
+            value: GPIO
+          type: User
+        type: Values
+      type: String
+    PIN_113_PERIPHERAL_FUNCTION:
+      attributes:
+        id: PIN_113_PERIPHERAL_FUNCTION
+      children:
+      - children:
+        - attributes:
+            value: GPIO
+          type: User
+        type: Values
+      type: String
+    PIN_113_FUNCTION_NAME:
+      attributes:
+        id: PIN_113_FUNCTION_NAME
+      children:
+      - children:
+        - attributes:
+            value: IF_MCU_SHUTDOWN
+          type: User
+        type: Values
+      type: String
+    PIN_113_DIR:
+      attributes:
+        id: PIN_113_DIR
+      children:
+      - children:
+        - attributes:
+            value: Out
+          type: User
+        type: Values
+      type: String
+    PIN_93_FUNCTION_TYPE:
+      attributes:
+        id: PIN_93_FUNCTION_TYPE
+      children:
+      - children:
+        - attributes:
+            value: GPIO
+          type: User
+        type: Values
+      type: String
+    PIN_93_PERIPHERAL_FUNCTION:
+      attributes:
+        id: PIN_93_PERIPHERAL_FUNCTION
+      children:
+      - children:
+        - attributes:
+            value: GPIO
+          type: User
+        type: Values
+      type: String
+    PIN_93_FUNCTION_NAME:
+      attributes:
+        id: PIN_93_FUNCTION_NAME
+      children:
+      - children:
+        - attributes:
+            value: POW_ONOFF_AI
+          type: User
+        type: Values
+      type: String
+    PIN_93_DIR:
+      attributes:
+        id: PIN_93_DIR
+      children:
+      - children:
+        - attributes:
+            value: Out
           type: User
         type: Values
       type: String
