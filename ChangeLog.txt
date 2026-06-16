@@ -79,3 +79,6 @@ MEMORY
 # Ver 1.1.0_b 13/06/2026 00:00:00 --------------------------------------------------
 1. Add support Control Power Pin from Bootloader
 	Usage: i+i: IFB e+e: EXP-MPU a+a: AIM
+
+# Ver 1.1.0_c 16/06/2026 00:00:00 --------------------------------------------------
+1. Fix bug read flash / verify flash
