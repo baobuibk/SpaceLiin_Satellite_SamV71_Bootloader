@@ -19,6 +19,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <string.h>
 #include "xtp_config.h"
 
 #ifdef __cplusplus
