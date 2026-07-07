@@ -3,15 +3,7 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/F:/F00_Workspace/06_SAT_SAM/MCU/MainProject/07_BOOTLOADER/src/dev/M0_App/AppOS/App_XTP/app_xtp.c</file>
-            <file>file:/F:/F00_Workspace/06_SAT_SAM/MCU/MainProject/07_BOOTLOADER/src/config/default/peripheral/pio/plib_pio.c</file>
-            <file>file:/F:/F00_Workspace/06_SAT_SAM/MCU/MainProject/07_BOOTLOADER/src/main.c</file>
-            <file>file:/F:/F00_Workspace/06_SAT_SAM/MCU/MainProject/07_BOOTLOADER/src/dev/M0_App/AppOS/App_Blink/app_blink.c</file>
-            <file>file:/F:/F00_Workspace/06_SAT_SAM/MCU/MainProject/07_BOOTLOADER/src/dev/M1_SysApp/xtp/xtp_arq.c</file>
-            <file>file:/F:/F00_Workspace/06_SAT_SAM/MCU/MainProject/07_BOOTLOADER/src/dev/M1_SysApp/xbld/xbld.c</file>
-            <file>file:/F:/F00_Workspace/06_SAT_SAM/MCU/MainProject/07_BOOTLOADER/src/config/default/peripheral/pio/plib_pio.h</file>
-            <file>file:/F:/F00_Workspace/06_SAT_SAM/MCU/MainProject/07_BOOTLOADER/src/dev/M1_SysApp/xtp/xtp_port.c</file>
-            <file>file:/F:/F00_Workspace/06_SAT_SAM/MCU/MainProject/07_BOOTLOADER/src/config/default/definitions.h</file>
+            <file>file:/F:/F00_Workspace/06_SAT_SAM/MCU/MainProject/07_BOOTLOADER/src/dev/M0_App/AppOS/App_Alive/app_alive.c</file>
         </group>
     </open-files>
 </project-private>

@@ -1,5 +1,7 @@
 /*
  * xtp.c
+ * V1.1.0
+ *    - Fix logic ARQ NAK send
  *                                                  C.H
  */
 
@@ -447,15 +449,18 @@ xTP_Return_t xTP_Read(xTP_Instance_t *inst, const uint8_t *rx_byte)
                 xTP_ECC_Result_t er = xTP_ECC_Decode(
                     d->data, (uint8_t)d->length,
                     d->ecc_received[0], d->ecc_received[1]);
-                if (er == XTP_ECC_OK || er == XTP_ECC_CORRECTED) {
-                    d->ecc_corrected = (er == XTP_ECC_CORRECTED) ? 1U : 0U;
-                    if (d->ecc_corrected) { xTP_Log("ECC corrected 1B (CRC16 retry)"); }
+                if (er == XTP_ECC_CORRECTED) {   
+                    d->ecc_corrected = 1U;
+                    xTP_Log("ECC corrected 1B (CRC16 retry)");
                     xtp_next_after_crc(d);
                 } else
 #endif
                 {
                     xTP_Log("ERR CRC16 calc=0x%04X recv=0x%04X", (unsigned)calc, (unsigned)recv);
                     XTP_STAT_INC(inst, rx_crc_errors);
+                #if XTP_USE_ARQ
+                    xTP_ARQ_SendNack(inst, d->seq_byte);
+                #endif
                     xTP_Reset(inst); return XTP_ERR_CRC;
                 }
             }
@@ -485,9 +490,9 @@ xTP_Return_t xTP_Read(xTP_Instance_t *inst, const uint8_t *rx_byte)
                 xTP_ECC_Result_t er = xTP_ECC_Decode(
                     d->data, (uint8_t)d->length,
                     d->ecc_received[0], d->ecc_received[1]);
-                if (er == XTP_ECC_OK || er == XTP_ECC_CORRECTED) {
-                    d->ecc_corrected = (er == XTP_ECC_CORRECTED) ? 1U : 0U;
-                    if (d->ecc_corrected) { xTP_Log("ECC corrected 1B (CRC32 retry)"); }
+                if (er == XTP_ECC_CORRECTED) {    
+                    d->ecc_corrected = 1U;
+                    xTP_Log("ECC corrected 1B (CRC32 retry)");
                     xtp_next_after_crc(d);
                 } else
 #endif
@@ -495,6 +500,9 @@ xTP_Return_t xTP_Read(xTP_Instance_t *inst, const uint8_t *rx_byte)
                     xTP_Log("ERR CRC32 calc=%08lX recv=%08lX",
                             (unsigned long)calc, (unsigned long)d->crc_received);
                     XTP_STAT_INC(inst, rx_crc_errors);
+                #if XTP_USE_ARQ
+                    xTP_ARQ_SendNack(inst, d->seq_byte);
+                #endif
                     xTP_Reset(inst); return XTP_ERR_CRC;
                 }
             }
@@ -540,7 +548,10 @@ xTP_Return_t xTP_Read(xTP_Instance_t *inst, const uint8_t *rx_byte)
             xTP_Log("<< Got id=0x%02X l=%u", (unsigned)d->id, (unsigned)d->length);
             return XTP_VALID;
         }
-        xTP_Log("ERR STOP2 0x%02X", (unsigned)b); xTP_Reset(inst); return XTP_ERR_STOP;
+        xTP_Log("ERR STOP2 0x%02X", (unsigned)b);
+        XTP_STAT_INC(inst, rx_frame_errors);
+        xTP_Reset(inst); 
+        return XTP_ERR_STOP;
 
     default:
         xTP_Reset(inst); return XTP_ERR;
@@ -579,6 +590,7 @@ xTP_Return_t xTP_SendEx(xTP_Instance_t *inst, xTP_ID_t id, uint8_t dst,
 
     if (inst == NULL)               { return XTP_ERR; }
     if (data == NULL && len > 0U)   { return XTP_ERR; }
+    if (len > XTP_DATA_MAX_LEN)     { return XTP_ERR_MEM; }
     d = &inst->data;
 
     XTP_TX_LOCK(inst);

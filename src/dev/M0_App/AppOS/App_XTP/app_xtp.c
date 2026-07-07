@@ -519,7 +519,7 @@ void App_XTP_Register(void) {
 
     xTP_Log("xTP+xCLI ready.  CMD=0x%04X  RESP=0x%04X",
             (unsigned)XCLI_XTP_CMD_ID, (unsigned)XCLI_XTP_RESP_ID);
-    xTP_Log("xBLD Version 1.1.0");
+    xTP_Log("xBLD Version 1.1.0_d");
     xTP_Log("HW Version 1.1.0");
 
     /* ---- Print power pin states at boot ---- */

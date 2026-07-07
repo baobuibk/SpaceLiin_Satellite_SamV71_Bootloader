@@ -43,6 +43,13 @@ extern "C" {
  *   0x00520200  Slot 1 app  ~895 KB
  *   0x005FFFFF  End of 2 MB flash
  * =========================================================================*/
+#ifndef XBLD_FLASH_BASE_ADDR
+#define XBLD_FLASH_BASE_ADDR   0x00400000U
+#endif
+#ifndef XBLD_FLASH_END_ADDR
+#define XBLD_FLASH_END_ADDR    0x00600000U   /* exclusive end, 2MB */
+#endif    
+    
 #ifndef XBLD_IMAGE_HDR_SIZE
 #define XBLD_IMAGE_HDR_SIZE    512U
 #endif

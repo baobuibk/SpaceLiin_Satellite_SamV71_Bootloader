@@ -28,6 +28,7 @@ typedef struct {
     void     (*system_reset)(void);
     void     (*jump_to_app)(uint32_t app_vector_addr);
     void     (*poll_fn)(void);
+    uint32_t (*get_board_ident)(void); 
 } xBLD_Port_t;
 void xBLD_Peripheral_DeInit(void);
 xBLD_Port_t xBLD_GetDefaultPort(void);

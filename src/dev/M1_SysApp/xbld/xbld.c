@@ -1,5 +1,6 @@
 /*
  * xbld.c V1.1.0
+ *  - Protect read range
  *           C.H
  */
 
@@ -100,6 +101,10 @@ static void xbld_cmd_ping(struct xCLI_ReqCtx_s *ctx, const char *args)
     xCLI_Ser_PutU8  (&ctx->ser, "state",  (uint8_t)s_xbld->state);
     xCLI_Ser_PutU8  (&ctx->ser, "slot",   s_xbld->active_slot);
     xCLI_Ser_PutU8  (&ctx->ser, "wr_max", XBLD_WRITE_DATA_MAX);
+    uint32_t bid = s_xbld->config.port.get_board_ident
+                   ? s_xbld->config.port.get_board_ident()
+                   : 0xFFFFFFFFU;
+    xCLI_Ser_PutU32(&ctx->ser, "board_ident", bid);
 }
 
 /* berase [slot]  -- slot defaults to 0 */
@@ -244,6 +249,16 @@ static void xbld_cmd_read(struct xCLI_ReqCtx_s *ctx, const char *args)
     if (addr == 0U) { ctx->status = XCLI_STATUS_BAD_ARG; return; }
     if (len == 0U)  len = 240U;
     if (len > 240U) len = 240U;
+    
+    // if (addr < XBLD_FLASH_BASE_ADDR || addr >= XBLD_FLASH_END_ADDR ||
+    //     len > (XBLD_FLASH_END_ADDR - addr))
+    // {
+    //     ctx->status = XCLI_STATUS_BAD_ARG;
+    //     xCLI_Ser_PutBool(&ctx->ser, "ok", 0U);
+    //     xCLI_Ser_PutStr (&ctx->ser, "err", "addr out of range");
+    //     return;
+    // }    
+    
     uint8_t read_buf[240];
     if (s_xbld->config.port.flash_read(addr, read_buf, len) != XBLD_PORT_OK)
     {
