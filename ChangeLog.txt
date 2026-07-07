@@ -1,1 +1,3 @@
 # [ISS] 24/06/2026 Ver 1.0.0
+[08/07/2026]-----------------------------------
+1. Minor change in xbld_cmd_read <-> remove read range maybe create bug

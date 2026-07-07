@@ -251,14 +251,14 @@ static void xbld_cmd_read(struct xCLI_ReqCtx_s *ctx, const char *args)
     if (len == 0U)  len = 240U;
     if (len > 240U) len = 240U;
     
-    if (addr < XBLD_FLASH_BASE_ADDR || addr >= XBLD_FLASH_END_ADDR ||
-        len > (XBLD_FLASH_END_ADDR - addr))
-    {
-        ctx->status = XCLI_STATUS_BAD_ARG;
-        xCLI_Ser_PutBool(&ctx->ser, "ok", 0U);
-        xCLI_Ser_PutStr (&ctx->ser, "err", "addr out of range");
-        return;
-    }
+    // if (addr < XBLD_FLASH_BASE_ADDR || addr >= XBLD_FLASH_END_ADDR ||
+    //     len > (XBLD_FLASH_END_ADDR - addr))
+    // {
+    //     ctx->status = XCLI_STATUS_BAD_ARG;
+    //     xCLI_Ser_PutBool(&ctx->ser, "ok", 0U);
+    //     xCLI_Ser_PutStr (&ctx->ser, "err", "addr out of range");
+    //     return;
+    // }
     
     uint8_t read_buf[240];
     if (s_xbld->config.port.flash_read(addr, read_buf, len) != XBLD_PORT_OK)

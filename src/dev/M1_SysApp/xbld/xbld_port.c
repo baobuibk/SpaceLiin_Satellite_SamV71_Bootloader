@@ -104,7 +104,7 @@ static int port_flash_erase(uint32_t addr, uint32_t size)
 
         if (!EFC_SectorErase(cur))
         {
-            XBLD_IRQ_RESTORE(); 
+            XBLD_IRQ_RESTORE();
             return XBLD_PORT_ERR;
         }
         while (EFC_IsBusy());
@@ -112,7 +112,7 @@ static int port_flash_erase(uint32_t addr, uint32_t size)
         XBLD_IRQ_RESTORE();
 
         cur += EFC_SECTORSIZE;
-        
+
         {
             volatile uint32_t delay = 10000U;
 
@@ -147,18 +147,18 @@ static int port_flash_write(uint32_t addr, const uint8_t *data, uint32_t len)
         if (chunk > len) chunk = len;
 
         XBLD_DCACHE_INVALIDATE(aligned, 16U);
-        
+
         XBLD_IRQ_DISABLE();
         memcpy(qw_buf, (const void *)aligned, 16U);
         memcpy(qw_buf + offset, data, chunk);
-       
+
         if (!EFC_QuadWordWrite((uint32_t *)qw_buf, aligned))
         {
             XBLD_IRQ_RESTORE();
             return XBLD_PORT_ERR;
         }
         while (EFC_IsBusy());
-        
+
         {
             volatile uint32_t delay = 10000U;
 
@@ -181,7 +181,7 @@ static int port_flash_read(uint32_t addr, uint8_t *data, uint32_t len)
 {
     if (data == NULL || len == 0U) return XBLD_PORT_ERR;
 
-    /* Invalidate EFC internal flash cache (SAMV71 §18.5.4).
+    /* Invalidate EFC internal flash cache (SAMV71 ï¿½18.5.4).
      * GETD = 0x00
      * EFC read pipeline/cache */
     EFC_REGS->EEFC_FCR = EEFC_FCR_FKEY_PASSWD | EEFC_FCR_FCMD_GETD;
