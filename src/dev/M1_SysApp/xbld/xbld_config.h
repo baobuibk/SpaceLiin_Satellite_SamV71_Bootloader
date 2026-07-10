@@ -99,13 +99,13 @@ extern "C" {
 #define XBLD_IMAGE_HDR_VERSION 1U
 
 /* Autoboot - slot 0 (main) */
-#ifndef XBLD_AUTOBOOT_TIMEOUT_S
-#define XBLD_AUTOBOOT_TIMEOUT_S   3U
+#ifndef XBLD_AUTOBOOT_TIMEOUT_MS
+#define XBLD_AUTOBOOT_TIMEOUT_MS   2000U
 #endif
 
 /* Autoboot - slot 1 (backup) */
-#ifndef XBLD_BACKUP_BOOT_TIMEOUT_S
-#define XBLD_BACKUP_BOOT_TIMEOUT_S  60U
+#ifndef XBLD_BACKUP_BOOT_TIMEOUT_MS
+#define XBLD_BACKUP_BOOT_TIMEOUT_MS  16000U
 #endif
 
 #ifndef XBLD_AUTOBOOT_POLL_MS

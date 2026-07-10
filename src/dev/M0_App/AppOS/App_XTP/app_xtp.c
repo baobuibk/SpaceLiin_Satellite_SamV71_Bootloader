@@ -30,7 +30,7 @@ xBLD_Instance_t  sam_xbld;
 
 static uint8_t  s_idle_reboot_armed = 0U;
 static uint32_t s_idle_reboot_tick  = 0U;
-#define IDLE_REBOOT_MS  60000U
+#define IDLE_REBOOT_MS  16000U
 
 static uint32_t s_j_first_tick = 0U;
 static uint8_t  s_j_count      = 0U;
@@ -178,9 +178,9 @@ void Process_User_Input(void)
     {
         uint8_t key = (uint8_t)ch;
         xBLD_SignalKeypress(&sam_xbld);
-        s_idle_reboot_tick  = Utils_GetTick(); 
-        s_idle_reboot_armed = 1U;            
-        s_last_bucket       = IDLE_REBOOT_MS / 10000U;
+        s_idle_reboot_tick  = Utils_GetTick();
+        s_idle_reboot_armed = 1U;
+        s_last_bucket       = IDLE_REBOOT_MS / 1000U;
 
         if (key == '0')
         {
@@ -429,21 +429,21 @@ static void IdleReboot_Process(void)
     if (sam_stats.rx_bytes != s_last_rx_bytes) {
         s_last_rx_bytes    = sam_stats.rx_bytes;
         s_idle_reboot_tick = now;
-        s_last_bucket      = IDLE_REBOOT_MS / 10000U;
+        s_last_bucket      = IDLE_REBOOT_MS / 1000U;
         s_last_active_tick = now;     
         return;
     }
 
     uint32_t elapsed = now - s_idle_reboot_tick;
     uint32_t remain  = (elapsed < IDLE_REBOOT_MS) ? (IDLE_REBOOT_MS - elapsed) : 0U;
-    uint32_t bucket  = remain / 10000U;
+    uint32_t bucket  = remain / 1000U;
 
     if (bucket != s_last_bucket) {
         s_last_bucket = bucket;
         if (remain > 0U) {
             // Only print when entering a new bucket, to avoid spamming logs.
             // 3000ms 
-            if ((now - s_last_active_tick) >= 3000U) {
+            if ((now - s_last_active_tick) >= 1000U) {
                 xTP_Log("[xBLD] Auto-boot in %us... (any key to cancel)",
                         (unsigned)(remain / 1000U));
             }
@@ -519,7 +519,7 @@ void App_XTP_Register(void) {
 
     xTP_Log("xTP+xCLI ready.  CMD=0x%04X  RESP=0x%04X",
             (unsigned)XCLI_XTP_CMD_ID, (unsigned)XCLI_XTP_RESP_ID);
-    xTP_Log("xBLD Version 1.1.0_d");
+    xTP_Log("xBLD Version 1.1.0_e");
     xTP_Log("HW Version 1.1.0");
 
     /* ---- Print power pin states at boot ---- */
