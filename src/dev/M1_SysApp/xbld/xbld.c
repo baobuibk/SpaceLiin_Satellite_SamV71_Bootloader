@@ -357,13 +357,13 @@ static bool autoboot_wait_ms(xBLD_Instance_t *inst, uint32_t ms)
  *
  * @param inst          xBLD instance.
  * @param slot          Slot to try (0 or 1).
- * @param timeout_s     Countdown in seconds (0 = jump immediately).
+ * @param timeout_ms    Countdown in milliseconds (0 = jump immediately).
  * @param label         Label for log messages, e.g. "main" or "backup".
  * @return true if jumped (never actually returns), false if aborted or verify failed.
  */
 static bool autoboot_try_slot(xBLD_Instance_t *inst,
                                uint8_t          slot,
-                               uint32_t         timeout_s,
+                               uint32_t         timeout_ms,
                                const char      *label)
 {
 #if XBLD_USE_IMAGE_VERIFY
@@ -392,10 +392,10 @@ static bool autoboot_try_slot(xBLD_Instance_t *inst,
     s_keypress_flag = 0U;
 
     /* Countdown loop */
-    if (timeout_s > 0U)
+    if (timeout_ms > 0U)
     {
         const uint32_t poll_ms  = XBLD_AUTOBOOT_POLL_MS;
-        const uint32_t total_ms = timeout_s * 1000U;
+        const uint32_t total_ms = timeout_ms;
         uint32_t elapsed_ms     = 0U;
         int      last_sec       = -1;
 
@@ -444,7 +444,7 @@ bool xBLD_AutobootRun(xBLD_Instance_t *inst)
 #endif
 
     /* ---- Slot 0: main, normal countdown ---- */
-    if (autoboot_try_slot(inst, 0U, XBLD_AUTOBOOT_TIMEOUT_S, "main"))
+    if (autoboot_try_slot(inst, 0U, XBLD_AUTOBOOT_TIMEOUT_MS, "main"))
         return true; /* jumped — unreachable */
 
     /* ---- Slot 1: backup, only if slot 0 verify failed ---- */
@@ -455,7 +455,7 @@ bool xBLD_AutobootRun(xBLD_Instance_t *inst)
     }
 
     XBLD_LOG("[xBLD] Slot 0 bad — trying slot 1 (backup)...");
-    if (autoboot_try_slot(inst, 1U, XBLD_BACKUP_BOOT_TIMEOUT_S, "backup"))
+    if (autoboot_try_slot(inst, 1U, XBLD_BACKUP_BOOT_TIMEOUT_MS, "backup"))
         return true; /* jumped — unreachable */
 
     XBLD_LOG("[xBLD] Both slots failed — staying in bootloader.");

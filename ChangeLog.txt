@@ -1,3 +1,6 @@
 # [ISS] 24/06/2026 Ver 1.0.0
 [08/07/2026]-----------------------------------
 1. Minor change in xbld_cmd_read <-> remove read range maybe create bug
+[10/07/2026]-----------------------------------
+1. Minor change: 60->16s user boot, 3s->2s autoboot
+
