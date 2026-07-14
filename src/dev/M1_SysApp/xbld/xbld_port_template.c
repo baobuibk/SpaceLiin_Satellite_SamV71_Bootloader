@@ -73,6 +73,12 @@ static int port_flash_erase(uint32_t addr, uint32_t size)
      * Example Tiva:
      *   for each 1K block:
      *       FlashErase(block_addr);
+     *
+     * IMPORTANT: a multi-sector erase blocks the caller for seconds.
+     * If your target has an external/HW watchdog, call your kick
+     * function once per sector (see wdt_kick below) instead of only
+     * relying on your scheduler - the scheduler does not run during
+     * this call.
      */
 
     (void)addr;
@@ -139,6 +145,14 @@ static void port_system_reset(void)
     NVIC_SystemReset();
 }
 
+/* Watchdog kick (optional) - call once per sector inside port_flash_erase()
+ * if your target has an external/HW watchdog that could time out during
+ * a multi-sector erase. Leave as NULL (or omit the field) if not needed. */
+static void port_wdt_kick(void)
+{
+    /* TODO: e.g. My_Watchdog_Feed(); */
+}
+
 /* Jump to app */
 typedef void (*FpVoidFn)(void);
 
@@ -194,6 +208,7 @@ xBLD_Port_t xBLD_GetDefaultPort(void)
         .get_tick     = port_get_tick,
         .system_reset = port_system_reset,
         .jump_to_app  = port_jump_to_app,
+        .wdt_kick     = port_wdt_kick,   /* or NULL if your target has no watchdog */
     };
     return port;
 }
