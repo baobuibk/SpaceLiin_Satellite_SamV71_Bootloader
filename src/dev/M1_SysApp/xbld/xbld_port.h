@@ -1,5 +1,5 @@
 /*
- * xbld_port.h 
+ * xbld_port.h
  */
 
 #ifndef XBLD_PORT_H
@@ -27,8 +27,8 @@ typedef struct {
     int      (*rom_write)(uint32_t addr, const uint8_t *data, uint32_t len);
     void     (*system_reset)(void);
     void     (*jump_to_app)(uint32_t app_vector_addr);
-    void     (*poll_fn)(void);
-    uint32_t (*get_board_ident)(void); 
+    uint32_t (*get_board_ident)(void);
+    void     (*wdt_kick)(void);
 } xBLD_Port_t;
 void xBLD_Peripheral_DeInit(void);
 xBLD_Port_t xBLD_GetDefaultPort(void);

@@ -1,6 +1,6 @@
 /*
- * xbld.h V1.1.0
- *           C.H
+ * xbld.h V1.2.0
+ *              C.H
  */
 
 #ifndef XBLD_H
@@ -86,13 +86,15 @@ typedef struct {
  * =========================================================================*/
 xBLD_Return_t xBLD_Init(xBLD_Instance_t *inst, const xBLD_Config_t *cfg);
 
-bool          xBLD_AutobootRun(xBLD_Instance_t *inst);
+void xBLD_AutobootArm(xBLD_Instance_t *inst);
+
+void xBLD_AutobootPoll(xBLD_Instance_t *inst);
+
+void xBLD_AutobootSignalActivity(xBLD_Instance_t *inst);
 
 xBLD_State_t  xBLD_GetState(const xBLD_Instance_t *inst);
 uint32_t      xBLD_GetTotalWritten(const xBLD_Instance_t *inst);
 void          xBLD_Reset(xBLD_Instance_t *inst);
-
-void xBLD_SignalKeypress(xBLD_Instance_t *inst);
 
 void xBLD_WriteHandler(xTP_Instance_t *xtp,
                         const uint8_t *payload, uint16_t len);

@@ -10,6 +10,12 @@
 #include <string.h>
 #include "Tick/tick.h"
 #include "USART_SPI_FRAM/fram_MB85RS2.h"
+#include "IO_ExWD-TPL5010/wd_tpl5010.h"
+
+static void port_wdt_kick(void)
+{
+    Watchdog_Device_Update();
+}
 
 /* Peripheral de-initialization function */
 /* WARNING !!!!!!!!!!
@@ -110,6 +116,7 @@ static int port_flash_erase(uint32_t addr, uint32_t size)
         while (EFC_IsBusy());
 
         XBLD_IRQ_RESTORE();
+        port_wdt_kick();
 
         cur += EFC_SECTORSIZE;
 
@@ -303,8 +310,8 @@ xBLD_Port_t xBLD_GetDefaultPort(void)
         .rom_write      = port_rom_write,
         .system_reset   = port_system_reset,
         .jump_to_app    = port_jump_to_app,
-        .poll_fn        = NULL,
         .get_board_ident = port_get_board_ident,
+        .wdt_kick       = port_wdt_kick,
     };
     return port;
 }

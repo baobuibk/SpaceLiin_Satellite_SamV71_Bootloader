@@ -34,7 +34,7 @@
 *.app
 *.i*86
 *.x86_64
-*.hex
+08_BOOTLOADER_ISS.X/*.hex
 
 # Debug files
 *.dSYM/

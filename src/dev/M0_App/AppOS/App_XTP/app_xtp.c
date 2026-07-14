@@ -1,5 +1,6 @@
 #include "app_xtp.h"
-#include "definitions.h" 
+#include "definitions.h"
+#include <stdbool.h>
 /* =========================================================================
  * Include
  * =========================================================================*/
@@ -28,14 +29,8 @@ xCLI_Instance_t  sam_xcli;
 xTP_Stats_t      sam_stats;
 xBLD_Instance_t  sam_xbld;
 
-static uint8_t  s_idle_reboot_armed = 0U;
-static uint32_t s_idle_reboot_tick  = 0U;
-#define IDLE_REBOOT_MS  16000U
-
 static uint32_t s_j_first_tick = 0U;
 static uint8_t  s_j_count      = 0U;
-
-static uint32_t s_last_bucket       = 0xFFFFFFFFU;
 
 static const uint32_t s_baud_table[] = { 250000U, 500000U, 1000000U, 921600U, 115200U };
 #define BAUD_TABLE_LEN  (sizeof(s_baud_table) / sizeof(s_baud_table[0]))
@@ -98,16 +93,16 @@ static void FRAM_Test_Read(void)
 /* =========================================================================
  * Functions
  * =========================================================================*/
-static void autoboot_poll(void)
+
+/*  Only these keys are recognized commands below */
+static bool is_console_key(uint8_t ch)
 {
-    int ch;
-
-    while ((ch = UART2_ReadByte()) >= 0) {
-        xBLD_SignalKeypress(&sam_xbld);
-    }
-
-    while ((ch = UART0_ReadByte()) >= 0) {
-        xBLD_SignalKeypress(&sam_xbld);
+    switch (ch) {
+        case '0': case '1': case '2': case '3': case '4': case '\r' : case '\n':
+        case 'b': case 'r': case 'j':
+            return true;
+        default:
+            return false;
     }
 }
 
@@ -134,12 +129,14 @@ void Process_User_Input(void)
     while ((ch = UART2_ReadByte()) >= 0)
     {
         uint8_t key = (uint8_t)ch;
-        xBLD_SignalKeypress(&sam_xbld);
-        s_idle_reboot_tick  = Utils_GetTick();
-        s_idle_reboot_armed = 1U;
-        s_last_bucket       = IDLE_REBOOT_MS / 1000U;
+        if (!is_console_key(key)) { continue; }
+        xBLD_AutobootSignalActivity(&sam_xbld);
 
-        if (key == '0')
+        if (key == '\r' || key == '\n')
+        {
+            xTP_Log("Refresh -> xBLD [C.H]Version: %s, Tick=%lu", XBLD_VERSION_STR, (unsigned long)Utils_GetTick());
+        }
+        else if (key == '0')
         {
             uint32_t t = Utils_GetTick();
             xTP_Log("Key '0': Tick=%lu", (unsigned long)t);
@@ -242,44 +239,6 @@ uint8_t xCLI_GpioWrite(uint8_t pin, uint8_t val)
     return 0U;
 }
 
-static void IdleReboot_Process(void)
-{
-    if (!s_idle_reboot_armed) return;
-
-    static uint32_t s_last_rx_bytes   = 0U;
-    static uint32_t s_last_active_tick = 0U;
-
-    uint32_t now = Utils_GetTick();
-
-    if (sam_stats.rx_bytes != s_last_rx_bytes) {
-        s_last_rx_bytes    = sam_stats.rx_bytes;
-        s_idle_reboot_tick = now;
-        s_last_bucket      = IDLE_REBOOT_MS / 1000U;
-        s_last_active_tick = now;
-        return;
-    }
-
-    uint32_t elapsed = now - s_idle_reboot_tick;
-    uint32_t remain  = (elapsed < IDLE_REBOOT_MS) ? (IDLE_REBOOT_MS - elapsed) : 0U;
-    uint32_t bucket  = remain / 1000U;
-
-    if (bucket != s_last_bucket) {
-        s_last_bucket = bucket;
-        if (remain > 0U) {
-            if ((now - s_last_active_tick) >= 1000U) {
-                xTP_Log("[xBLD] Auto-boot in %us... (any key to cancel)",
-                        (unsigned)(remain / 1000U));
-            }
-        }
-    }
-
-    if (elapsed >= IDLE_REBOOT_MS) {
-        xTP_Log("[xBLD] Idle timeout - booting...");
-        s_idle_reboot_armed = 0U;
-        xBLD_AutobootRun(&sam_xbld);
-    }
-}
-
 /* =========================================================================
  * Core
  * =========================================================================*/
@@ -293,7 +252,7 @@ void XTP_Run(void) {
     xTP_SEG_Poll(&sam_xtp);
 #endif
     Process_User_Input();
-    IdleReboot_Process();
+    xBLD_AutobootPoll(&sam_xbld);
 }
 
 void App_XTP_Register(void) {
@@ -314,26 +273,22 @@ void App_XTP_Register(void) {
     xCLI_RegisterBuiltins(&sam_xcli);
 
     xBLD_Config_t bld_cfg = {
-        .port = xBLD_GetDefaultPort(), 
+        .port = xBLD_GetDefaultPort(),
         .xtp  = &sam_xtp,
         .xcli = &sam_xcli,
     };
-    bld_cfg.port.poll_fn = autoboot_poll;
     xBLD_Init(&sam_xbld, &bld_cfg);
     uint8_t cause = bld_cfg.port.get_boot_cause
                     ? bld_cfg.port.get_boot_cause() : 0xFFU;
     xBLD_BootInfo_Record(&bld_cfg.port, cause);
-    if (!xBLD_AutobootRun(&sam_xbld)) { 
-        s_idle_reboot_armed = 1U;
-        s_idle_reboot_tick  = Utils_GetTick();
-        xTP_Log("[xBLD] Auto-boot in %us if no activity. "
-                "Keys: '0'=tick '1'=ping 'j'+'j'=jump",
-                (unsigned)(IDLE_REBOOT_MS / 1000U));
-    }
+    xBLD_AutobootArm(&sam_xbld);
+    xTP_Log("[xBLD] Autoboot armed: slot 0 in %us unless Command "
+            "or ConsoleKey is detected.",
+            (unsigned)(XBLD_AUTOBOOT_TIMEOUT_MS / 1000U));
 
     xTP_Log("xTP+xCLI ready.  CMD=0x%04X  RESP=0x%04X",
             (unsigned)XCLI_XTP_CMD_ID, (unsigned)XCLI_XTP_RESP_ID);
-    xTP_Log("xBLD Version 1.1.0");
+    xTP_Log("xBLD [C.H]Version: %s", XBLD_VERSION_STR);
     {
         uint8_t board_id = BOARD_IDENT_Get();
         xTP_Log("HW Version ISS - 1.0.0 | Board: %s", board_id ? "BOARD2" : "BOARD1");

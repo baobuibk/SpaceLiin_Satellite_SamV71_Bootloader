@@ -1,6 +1,8 @@
-# [ISS] 24/06/2026 Ver 1.0.0
-[08/07/2026]-----------------------------------
+# [ISS] Ver 1.0.0   [08/07/2026] 00:00:00 --------------------------------------------------
 1. Minor change in xbld_cmd_read <-> remove read range maybe create bug
-[10/07/2026]-----------------------------------
+	            [10/07/2026] 00:00:00 --------------------------------------------------
 1. Minor change: 60->16s user boot, 3s->2s autoboot
-
+# [ISS] Ver 1.2.0   [14/07/2026] 00:00:00 --------------------------------------------------
+1. BootMode now only could be held by xBLD-Command or signed key.
+2. Changed some log print.
+3. Upgraded to 1.2.0 minor version.

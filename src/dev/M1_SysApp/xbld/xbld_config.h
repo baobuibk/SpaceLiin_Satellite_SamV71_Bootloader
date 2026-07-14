@@ -8,6 +8,11 @@ extern "C" {
  * xBLD
  * This file defines hardware-specific parameters and feature switches for xBLD.
  * =========================================================================*/
+#define XBLD_VERSION_MAJOR     1
+#define XBLD_VERSION_MINOR     2
+#define XBLD_VERSION_PATCH     0
+#define XBLD_VERSION_STR       "1.2.0"
+
 #define XBLD_XTP_WRITE_ID        ((uint16_t)0x0200U)
 #define XBLD_XTP_WRITE_ACK_ID    ((uint16_t)0x0201U)
 
@@ -100,16 +105,16 @@ extern "C" {
 
 /* Autoboot - slot 0 (main) */
 #ifndef XBLD_AUTOBOOT_TIMEOUT_MS
-#define XBLD_AUTOBOOT_TIMEOUT_MS   1500U
+#define XBLD_AUTOBOOT_TIMEOUT_MS   2000U
 #endif
 
-/* Autoboot - slot 1 (backup) */
+/* Autoboot - slot 1 (backup), tried only if slot 0 fails verification */
 #ifndef XBLD_BACKUP_BOOT_TIMEOUT_MS
-#define XBLD_BACKUP_BOOT_TIMEOUT_MS  15000U
+#define XBLD_BACKUP_BOOT_TIMEOUT_MS  16000U
 #endif
 
-#ifndef XBLD_AUTOBOOT_POLL_MS
-#define XBLD_AUTOBOOT_POLL_MS     100U
+#ifndef XBLD_AUTOBOOT_IDLE_MS
+#define XBLD_AUTOBOOT_IDLE_MS      16000U
 #endif
 
 /* Logging */
