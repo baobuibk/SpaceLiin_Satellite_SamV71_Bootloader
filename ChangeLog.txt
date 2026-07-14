@@ -90,6 +90,6 @@ MEMORY
 1. Minor change: 60->16s user boot, 3s->2s autoboot
 
 # Ver 1.2.0   14/07/2026 00:00:00 --------------------------------------------------
-1. BootMode now only could be hold by xBLD-Command or signed key.
+1. BootMode now only could be held by xBLD-Command or signed key.
 2. Changed some log print.
 3. Upgraded to 1.2.0 minor version.
