@@ -1,5 +1,7 @@
 /*
  * xbld_port (samv71) .c - xBLD
+ * Ver 1.2.2:
+ *  - GETD flush after write/erase to avoid stale read cache during verify
  */
 
 #include "xbld_port.h"
@@ -96,10 +98,39 @@ static int port_flash_init(void)
     return XBLD_PORT_OK;
 }
 
+/* EEFC read-side cache/pipeline state.
+ * false => next port_flash_read() must flush the EEFC read cache (GETD)
+ * before trusting a direct memory-mapped read. Set false whenever flash
+ * content changes (erase/write); set true once flushed. This avoids
+ * re-issuing GETD on every single read chunk during a sequential verify
+ * pass, where nothing changes between reads. */
+static volatile bool s_efc_read_cache_valid = false;
+
+static void port_efc_cache_flush(void)
+{
+    /* GETD = 0x00: side-effect used here purely to flush/resync the EEFC
+     * internal read pipeline before trusting a direct
+     * memory-mapped read right after a command-mode operation. */
+    EFC_REGS->EEFC_FCR = EEFC_FCR_FKEY_PASSWD | EEFC_FCR_FCMD_GETD;
+    while (!(EFC_REGS->EEFC_FSR & EEFC_FSR_FRDY_Msk)) {}
+
+    {
+        volatile uint32_t delay = 10000U;
+        while (delay--)
+        {
+            __asm volatile ("nop");
+        }
+    }
+
+    s_efc_read_cache_valid = true;
+}
+
 /* Flash erase */
 static int port_flash_erase(uint32_t addr, uint32_t size)
 {
     if (size == 0U) return XBLD_PORT_ERR;
+
+    s_efc_read_cache_valid = false;
 
     uint32_t num_sectors = (size + EFC_SECTORSIZE - 1U) / EFC_SECTORSIZE;
     uint32_t cur = addr & ~((uint32_t)(EFC_SECTORSIZE - 1U));
@@ -146,6 +177,8 @@ static int port_flash_write(uint32_t addr, const uint8_t *data, uint32_t len)
 {
     static uint8_t qw_buf[16];
 
+    s_efc_read_cache_valid = false;
+
     while (len > 0U)
     {
         uint32_t aligned = addr & ~0xFU;
@@ -188,16 +221,11 @@ static int port_flash_read(uint32_t addr, uint8_t *data, uint32_t len)
 {
     if (data == NULL || len == 0U) return XBLD_PORT_ERR;
 
-    /* Invalidate EFC internal flash cache (SAMV71 �18.5.4).
-     * GETD = 0x00
-     * EFC read pipeline/cache */
-    EFC_REGS->EEFC_FCR = EEFC_FCR_FKEY_PASSWD | EEFC_FCR_FCMD_GETD;
-    while (!(EFC_REGS->EEFC_FSR & EEFC_FSR_FRDY_Msk)) {}
-
+    if (!s_efc_read_cache_valid)
     {
-        volatile uint32_t delay = 100U;
-        while (delay--) { __asm volatile ("nop"); }
+        port_efc_cache_flush();
     }
+
     XBLD_DCACHE_INVALIDATE(addr, len);
     memcpy(data, (const void *)addr, len);
     return XBLD_PORT_OK;
