@@ -10,8 +10,8 @@ extern "C" {
  * =========================================================================*/
 #define XBLD_VERSION_MAJOR     1
 #define XBLD_VERSION_MINOR     2
-#define XBLD_VERSION_PATCH     0
-#define XBLD_VERSION_STR       "1.2.0"
+#define XBLD_VERSION_PATCH     2
+#define XBLD_VERSION_STR       "1.2.2"
 
 #define XBLD_XTP_WRITE_ID        ((uint16_t)0x0200U)
 #define XBLD_XTP_WRITE_ACK_ID    ((uint16_t)0x0201U)

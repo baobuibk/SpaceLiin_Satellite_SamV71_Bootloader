@@ -93,3 +93,13 @@ MEMORY
 1. BootMode now only could be held by xBLD-Command or signed key.
 2. Changed some log print.
 3. Upgraded to 1.2.0 minor version.
+
+# Ver 1.2.1   15/07/2026 00:00:00 --------------------------------------------------
+1. Switched to use external crystal for Main RC
+2. Changed EFC Waitstate 5->6
+3. Bumped patch 1.2.1
+
+# Ver 1.2.2   15/07/2026 00:00:00 --------------------------------------------------
+1. port_flash_read() must flush the EEFC read cache (GETD) before trusting a direct memory-mapped read.
+2. Bumped patch 1.2.2
+

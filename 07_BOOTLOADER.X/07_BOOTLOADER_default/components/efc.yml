@@ -26,6 +26,9 @@ data:
             id: efc
             value: '5'
           type: Dynamic
+        - attributes:
+            value: '6'
+          type: User
         type: Values
       type: Integer
   userData: {}

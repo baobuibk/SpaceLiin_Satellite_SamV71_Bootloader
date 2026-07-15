@@ -325,13 +325,13 @@
                      displayName="07_BOOTLOADER_default"
                      projectFiles="true">
         <logicalFolder name="components" displayName="components" projectFiles="true">
+          <itemPath>07_BOOTLOADER_default/components/core.yml</itemPath>
+          <itemPath>07_BOOTLOADER_default/components/dfp.yml</itemPath>
+          <itemPath>07_BOOTLOADER_default/components/uart0.yml</itemPath>
+          <itemPath>07_BOOTLOADER_default/components/usart2.yml</itemPath>
+          <itemPath>07_BOOTLOADER_default/components/efc.yml</itemPath>
           <itemPath>07_BOOTLOADER_default/components/uart2.yml</itemPath>
           <itemPath>07_BOOTLOADER_default/components/cmsis.yml</itemPath>
-          <itemPath>07_BOOTLOADER_default/components/dfp.yml</itemPath>
-          <itemPath>07_BOOTLOADER_default/components/efc.yml</itemPath>
-          <itemPath>07_BOOTLOADER_default/components/usart2.yml</itemPath>
-          <itemPath>07_BOOTLOADER_default/components/uart0.yml</itemPath>
-          <itemPath>07_BOOTLOADER_default/components/core.yml</itemPath>
         </logicalFolder>
         <itemPath>07_BOOTLOADER_default/mcc-config.mc4</itemPath>
       </logicalFolder>

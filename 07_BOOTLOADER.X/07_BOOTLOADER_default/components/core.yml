@@ -6531,6 +6531,16 @@ data:
           type: User
         type: Values
       type: String
+    PMC_CKGR_MOR_MOSCSEL:
+      attributes:
+        id: PMC_CKGR_MOR_MOSCSEL
+      children:
+      - children:
+        - attributes:
+            value: 'true'
+          type: User
+        type: Values
+      type: Boolean
   userData:
     children:
     - attributes:
