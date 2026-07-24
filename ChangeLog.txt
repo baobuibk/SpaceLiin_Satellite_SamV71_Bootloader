@@ -103,3 +103,6 @@ MEMORY
 1. port_flash_read() must flush the EEFC read cache (GETD) before trusting a direct memory-mapped read.
 2. Bumped patch 1.2.2
 
+# Ver 1.2.3   24/07/2026 00:00:00 --------------------------------------------------
+1. Only Enter key stop booting countdown
+2. Softreset now changed to "r" + "!"
