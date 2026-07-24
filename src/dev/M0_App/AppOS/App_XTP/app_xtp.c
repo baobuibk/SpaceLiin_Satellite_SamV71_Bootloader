@@ -32,6 +32,9 @@ xBLD_Instance_t  sam_xbld;
 static uint32_t s_j_first_tick = 0U;
 static uint8_t  s_j_count      = 0U;
 
+static uint8_t  s_r_count      = 0U;
+static uint32_t s_r_first_tick = 0U;
+
 static const uint32_t s_baud_table[] = { 250000U, 500000U, 1000000U, 921600U, 115200U };
 #define BAUD_TABLE_LEN  (sizeof(s_baud_table) / sizeof(s_baud_table[0]))
 static uint8_t s_baud_idx = 0U;
@@ -99,7 +102,7 @@ static bool is_console_key(uint8_t ch)
 {
     switch (ch) {
         case '0': case '1': case '2': case '3': case '4': case '\r' : case '\n':
-        case 'b': case 'r': case 'j':
+        case 'b': case 'r': case 'j': case '!':
             return true;
         default:
             return false;
@@ -125,15 +128,29 @@ void Process_User_Input(void)
         }
     }
 
+    if (s_r_count == 1U)
+    {
+        if ((now - s_r_first_tick) > 2000U)
+        {
+            xTP_Log("Key 'r': confirm timeout, cancelled");
+            s_r_first_tick = 0U;
+            s_r_count      = 0U;
+        }
+    }
+
     /* ---- Process UART input ---- */
     while ((ch = UART2_ReadByte()) >= 0)
     {
         uint8_t key = (uint8_t)ch;
         if (!is_console_key(key)) { continue; }
-        xBLD_AutobootSignalActivity(&sam_xbld);
 
         if (key == '\r' || key == '\n')
         {
+            xBLD_AutobootSignalActivity(&sam_xbld);
+
+            s_j_first_tick = 0U; s_j_count = 0U;
+            s_r_first_tick = 0U; s_r_count = 0U;
+
             xTP_Log("Refresh -> xBLD [C.H]Version: %s, Tick=%lu", XBLD_VERSION_STR, (unsigned long)Utils_GetTick());
         }
         else if (key == '0')
@@ -184,9 +201,33 @@ void Process_User_Input(void)
         }
         else if (key == 'r')
         {
-            xTP_Log("[SYS] Soft reset...");
-            while (UART0_WriteIsBusy()) { ; }
-            NVIC_SystemReset();
+            if (s_r_count == 0U)
+            {
+                s_r_first_tick = Utils_GetTick();
+                s_r_count      = 1U;
+                xTP_Log("Key 'r': Press '!' within 2s to confirm reset");
+            }
+        }
+        else if (key == '!')
+        {
+            if (s_r_count == 1U)
+            {
+                uint32_t diff = Utils_GetTick() - s_r_first_tick;
+
+                if (diff <= 2000U)
+                {
+                    xTP_Log("Key '!': confirmed, resetting...");
+                    while (UART0_WriteIsBusy()) { ; }
+                    NVIC_SystemReset();
+                }
+                else
+                {
+                    xTP_Log("Key '!': timeout");
+                }
+
+                s_r_first_tick = 0U;
+                s_r_count      = 0U;
+            }
         }
         else if (key == 'j')
         {
